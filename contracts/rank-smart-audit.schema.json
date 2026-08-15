@@ -10,18 +10,25 @@
     "index_candidate",
     "url_history",
     "change_risk",
-    "providers"
+    "search",
+    "analytics",
+    "revenue",
+    "backlinks"
   ],
   "properties": {
     "post_id": {"type": "integer", "minimum": 1},
     "url": {"type": "string"},
     "canonical_candidate": {"type": "string"},
     "index_candidate": {"type": "boolean"},
+    "title_chars": {"type": "integer", "minimum": 0},
+    "slug_chars": {"type": "integer", "minimum": 0},
+    "latin_slug": {"type": "boolean"},
+    "excerpt_present": {"type": "boolean"},
+    "featured_image_label": {"type": "string"},
+    "featured_image_width": {"type": "integer", "minimum": 0},
+    "primary_silo": {"type": "string"},
+    "author": {"type": "string"},
     "seo_authority": {"type": "string"},
-    "content_signals": {
-      "type": "object",
-      "additionalProperties": true
-    },
     "url_history": {
       "type": "object",
       "required": ["available", "count", "slug_changes", "last_event"],
@@ -44,16 +51,10 @@
       },
       "additionalProperties": false
     },
-    "providers": {
-      "type": "object",
-      "properties": {
-        "search_console": {"$ref": "#/$defs/providerEvidence"},
-        "analytics": {"$ref": "#/$defs/providerEvidence"},
-        "adsense": {"$ref": "#/$defs/providerEvidence"},
-        "backlinks": {"$ref": "#/$defs/providerEvidence"}
-      },
-      "additionalProperties": true
-    }
+    "search": {"$ref": "#/$defs/providerEvidence"},
+    "analytics": {"$ref": "#/$defs/providerEvidence"},
+    "revenue": {"$ref": "#/$defs/providerEvidence"},
+    "backlinks": {"$ref": "#/$defs/providerEvidence"}
   },
   "$defs": {
     "providerEvidence": {
@@ -63,7 +64,10 @@
         "provider": {"type": "string"},
         "connected": {"type": "boolean"},
         "observed_at_gmt": {"type": ["string", "null"]},
-        "metrics": {"type": "object", "additionalProperties": {"type": ["number", "integer", "string", "boolean", "null"]}}
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {"type": ["number", "integer", "string", "boolean", "null"]}
+        }
       },
       "additionalProperties": true
     }
