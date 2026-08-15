@@ -21,3 +21,21 @@ jobs:
         run: find plugins theme -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: Build installable ZIPs
         run: python3 tools/package_release.py
+      - name: Validate staging release
+        run: python3 tools/validate_staging_release.py
+      - name: Upload staging kit
+        uses: actions/upload-artifact@v4
+        with:
+          name: sia-infinity-ancf-wordpress-staging-${{ github.sha }}
+          path: |
+            dist/SIA-Infinity-ANCF-WordPress-Staging-Kit-*.zip
+            dist/sia-ancf-news-*.zip
+            dist/sia-ancf-core-*.zip
+            dist/sia-url-memory-*.zip
+            dist/sia-entity-author-*.zip
+            dist/sia-semantic-intelligence-*.zip
+            dist/rank-smart-*.zip
+            dist/INSTALL-STAGING.md
+            dist/staging-manifest.json
+          if-no-files-found: error
+          retention-days: 30
