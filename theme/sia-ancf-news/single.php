@@ -9,7 +9,7 @@
   $published = get_the_date('', $post_id);
   $modified = get_the_modified_date('', $post_id);
   ?>
-  <div class="sia-single-layout">
+  <div class="sia-single-layout<?php echo $related_ids ? '' : ' sia-single-layout--solo'; ?>">
     <article <?php post_class('sia-single-main'); ?>>
       <header class="entry-header">
         <?php if ($category) : ?>
@@ -53,14 +53,16 @@
       <?php endif; ?>
     </article>
 
-    <aside class="sia-single-sidebar" aria-label="<?php esc_attr_e('More stories', 'sia-ancf-news'); ?>">
-      <h2 class="sia-sidebar-label"><?php esc_html_e('More Stories', 'sia-ancf-news'); ?></h2>
-      <div class="sia-sidebar-list">
-        <?php foreach ($related_ids as $related_id) : ?>
-          <?php sia_ancf_news_render_card($related_id, 'compact'); ?>
-        <?php endforeach; ?>
-      </div>
-    </aside>
+    <?php if ($related_ids) : ?>
+      <aside class="sia-single-sidebar" aria-label="<?php esc_attr_e('More stories', 'sia-ancf-news'); ?>">
+        <h2 class="sia-sidebar-label"><?php esc_html_e('More Stories', 'sia-ancf-news'); ?></h2>
+        <div class="sia-sidebar-list">
+          <?php foreach ($related_ids as $related_id) : ?>
+            <?php sia_ancf_news_render_card($related_id, 'compact'); ?>
+          <?php endforeach; ?>
+        </div>
+      </aside>
+    <?php endif; ?>
   </div>
 <?php endwhile; ?>
 </div>
