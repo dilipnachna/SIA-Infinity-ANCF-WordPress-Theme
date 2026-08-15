@@ -1,9 +1,9 @@
 # Rank Smart
 
-**Version:** 0.4.0-alpha.1  
+**Version:** 0.4.1-alpha.1  
 **Mode:** read-only
 
-Rank Smart is the SEO intelligence layer for SIA Infinity ANCF. In v0.4 its SEO authority boundary is unchanged: it audits posts/pages, local URL history and provider-ready evidence without taking over production SEO output.
+Rank Smart is the SEO intelligence layer for SIA Infinity ANCF. In v0.4.1 its SEO authority boundary is unchanged: it audits posts/pages, local URL history and provider-ready evidence without taking over production SEO output.
 
 ## What Rank Smart currently does
 
@@ -20,6 +20,8 @@ Rank Smart is the SEO intelligence layer for SIA Infinity ANCF. In v0.4 its SEO 
 ## What it does not do
 
 It does not output SEO metadata or execute SEO changes. It does not change titles, meta, canonicals, robots, schema, sitemaps, redirects, URLs or content.
+
+Homepage editorial placement introduced in ANCF v0.4.1 is a separate presentation authority. Rank Smart does not treat homepage exclusion as an instruction to noindex, redirect, delete or devalue a URL.
 
 ## Change risk is not SEO score
 
