@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sia-infinity.com/contracts/rank-smart-audit.schema.json",
+  "title": "SIA Rank Smart Read-only Audit",
+  "type": "object",
+  "required": [
+    "post_id",
+    "url",
+    "canonical_candidate",
+    "index_candidate",
+    "url_history",
+    "change_risk",
+    "providers"
+  ],
+  "properties": {
+    "post_id": {"type": "integer", "minimum": 1},
+    "url": {"type": "string"},
+    "canonical_candidate": {"type": "string"},
+    "index_candidate": {"type": "boolean"},
+    "seo_authority": {"type": "string"},
+    "content_signals": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "url_history": {
+      "type": "object",
+      "required": ["available", "count", "slug_changes", "last_event"],
+      "properties": {
+        "available": {"type": "boolean"},
+        "count": {"type": "integer", "minimum": 0},
+        "slug_changes": {"type": "integer", "minimum": 0},
+        "last_event": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "change_risk": {
+      "type": "object",
+      "required": ["score", "level", "reasons", "meaning"],
+      "properties": {
+        "score": {"type": "integer", "minimum": 0, "maximum": 100},
+        "level": {"enum": ["LOW", "MEDIUM", "HIGH"]},
+        "reasons": {"type": "array", "items": {"type": "string"}},
+        "meaning": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "providers": {
+      "type": "object",
+      "properties": {
+        "search_console": {"$ref": "#/$defs/providerEvidence"},
+        "analytics": {"$ref": "#/$defs/providerEvidence"},
+        "adsense": {"$ref": "#/$defs/providerEvidence"},
+        "backlinks": {"$ref": "#/$defs/providerEvidence"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "providerEvidence": {
+      "type": "object",
+      "required": ["provider", "connected", "metrics"],
+      "properties": {
+        "provider": {"type": "string"},
+        "connected": {"type": "boolean"},
+        "observed_at_gmt": {"type": ["string", "null"]},
+        "metrics": {"type": "object", "additionalProperties": {"type": ["number", "integer", "string", "boolean", "null"]}}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
