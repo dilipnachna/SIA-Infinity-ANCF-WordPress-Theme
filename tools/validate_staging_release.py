@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import re
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -18,7 +19,23 @@ theme = "sia-ancf-news"
 
 errors = []
 
+
+def extract_header_version(text: str):
+    match = re.search(r"^\s*\*?\s*Version:\s*([^\r\n]+)", text, flags=re.MULTILINE)
+    return match.group(1).strip() if match else None
+
+
 for slug in plugins:
+    source = ROOT / "plugins" / slug / f"{slug}.php"
+    if not source.exists():
+        errors.append(f"missing plugin bootstrap: {source.relative_to(ROOT)}")
+    else:
+        header_version = extract_header_version(source.read_text(encoding="utf-8"))
+        if header_version != VERSION:
+            errors.append(
+                f"{source.relative_to(ROOT)}: Version header {header_version!r} != release VERSION {VERSION!r}"
+            )
+
     path = DIST / f"{slug}-{VERSION}.zip"
     if not path.exists():
         errors.append(f"missing plugin ZIP: {path.name}")
@@ -27,6 +44,25 @@ for slug in plugins:
         names = zf.namelist()
         if not any(name.startswith(f"{slug}/") for name in names):
             errors.append(f"{path.name}: missing top-level {slug}/ folder")
+        bootstrap = f"{slug}/{slug}.php"
+        if bootstrap not in names:
+            errors.append(f"{path.name}: missing {bootstrap}")
+        else:
+            packaged_version = extract_header_version(zf.read(bootstrap).decode("utf-8"))
+            if packaged_version != VERSION:
+                errors.append(
+                    f"{path.name}: packaged Version header {packaged_version!r} != release VERSION {VERSION!r}"
+                )
+
+source = ROOT / "theme" / theme / "style.css"
+if not source.exists():
+    errors.append(f"missing theme stylesheet: {source.relative_to(ROOT)}")
+else:
+    header_version = extract_header_version(source.read_text(encoding="utf-8"))
+    if header_version != VERSION:
+        errors.append(
+            f"{source.relative_to(ROOT)}: Version header {header_version!r} != release VERSION {VERSION!r}"
+        )
 
 path = DIST / f"{theme}-{VERSION}.zip"
 if not path.exists():
@@ -34,8 +70,15 @@ if not path.exists():
 else:
     with ZipFile(path) as zf:
         names = zf.namelist()
-        if f"{theme}/style.css" not in names:
-            errors.append(f"{path.name}: missing {theme}/style.css")
+        stylesheet = f"{theme}/style.css"
+        if stylesheet not in names:
+            errors.append(f"{path.name}: missing {stylesheet}")
+        else:
+            packaged_version = extract_header_version(zf.read(stylesheet).decode("utf-8"))
+            if packaged_version != VERSION:
+                errors.append(
+                    f"{path.name}: packaged Version header {packaged_version!r} != release VERSION {VERSION!r}"
+                )
 
 kit = DIST / f"SIA-Infinity-ANCF-WordPress-Staging-Kit-v{VERSION}.zip"
 if not kit.exists():
@@ -61,4 +104,4 @@ else:
 if errors:
     raise SystemExit("\n".join(errors))
 
-print("Installable staging release validated")
+print(f"Installable staging release validated with synchronized component version {VERSION}")
