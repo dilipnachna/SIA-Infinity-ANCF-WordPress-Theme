@@ -1,30 +1,47 @@
 <?php
 get_header();
 
-$lead_ids = sia_ancf_news_query_ids([
-    'posts_per_page' => 5,
+$fallback_ids = sia_ancf_news_home_query_ids([
+    'posts_per_page' => 32,
 ]);
 
-$lead_id = $lead_ids[0] ?? 0;
-$top_ids = array_slice($lead_ids, 1, 4);
-$latest_ids = sia_ancf_news_query_ids([
+$explicit_lead = sia_ancf_news_home_query_ids([
+    'posts_per_page' => 3,
+], 'lead');
+$lead_candidates = sia_ancf_news_fill_ids($explicit_lead, $fallback_ids, 1);
+$lead_id = $lead_candidates[0] ?? 0;
+
+$explicit_top = sia_ancf_news_home_query_ids([
     'posts_per_page' => 8,
-    'post__not_in'   => $lead_id ? [$lead_id] : [],
+], 'top');
+$top_ids = sia_ancf_news_fill_ids($explicit_top, $fallback_ids, 4, $lead_id ? [$lead_id] : []);
+
+$explicit_breaking = sia_ancf_news_home_query_ids([
+    'posts_per_page' => 8,
+], 'breaking');
+$headline_ids = sia_ancf_news_fill_ids($explicit_breaking, $fallback_ids, 4);
+
+$used_primary = array_merge($lead_id ? [$lead_id] : [], $top_ids);
+$latest_ids = sia_ancf_news_home_query_ids([
+    'posts_per_page' => 12,
+    'post__not_in'   => $used_primary,
 ]);
 $section_categories = sia_ancf_news_section_categories(4);
 ?>
 
 <div class="sia-shell">
-  <?php if ($lead_id) : ?>
+  <?php if ($headline_ids) : ?>
     <section class="sia-latest-strip" aria-label="<?php esc_attr_e('Latest headlines', 'sia-ancf-news'); ?>">
-      <strong><?php esc_html_e('Latest', 'sia-ancf-news'); ?></strong>
+      <strong><?php echo $explicit_breaking ? esc_html__('Breaking', 'sia-ancf-news') : esc_html__('Latest', 'sia-ancf-news'); ?></strong>
       <div class="sia-latest-strip__items">
-        <?php foreach (array_slice($lead_ids, 0, 4) as $headline_id) : ?>
+        <?php foreach ($headline_ids as $headline_id) : ?>
           <a href="<?php echo esc_url(get_permalink($headline_id)); ?>"><?php echo esc_html(get_the_title($headline_id)); ?></a>
         <?php endforeach; ?>
       </div>
     </section>
+  <?php endif; ?>
 
+  <?php if ($lead_id) : ?>
     <section class="sia-lead-layout" aria-label="<?php esc_attr_e('Top stories', 'sia-ancf-news'); ?>">
       <article class="sia-lead-story">
         <?php sia_ancf_news_thumbnail($lead_id, 'sia-news-hero', 'sia-lead-story__media'); ?>
@@ -54,7 +71,7 @@ $section_categories = sia_ancf_news_section_categories(4);
   <?php else : ?>
     <section class="sia-empty-state">
       <h1><?php bloginfo('name'); ?></h1>
-      <p><?php esc_html_e('Your newsroom is ready. Publish your first story to build the front page.', 'sia-ancf-news'); ?></p>
+      <p><?php esc_html_e('Your newsroom is ready. Publish or mark a story as homepage eligible to build the front page.', 'sia-ancf-news'); ?></p>
     </section>
   <?php endif; ?>
 
@@ -74,10 +91,15 @@ $section_categories = sia_ancf_news_section_categories(4);
 
   <?php foreach ($section_categories as $section_category) : ?>
     <?php
-    $section_ids = sia_ancf_news_query_ids([
+    $section_featured = sia_ancf_news_home_query_ids([
         'posts_per_page' => 4,
+        'cat' => (int) $section_category->term_id,
+    ], 'section_featured');
+    $section_fallback = sia_ancf_news_home_query_ids([
+        'posts_per_page' => 12,
         'cat'            => (int) $section_category->term_id,
     ]);
+    $section_ids = sia_ancf_news_fill_ids($section_featured, $section_fallback, 4);
     if (!$section_ids) {
         continue;
     }
