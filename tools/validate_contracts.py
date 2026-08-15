@@ -10,6 +10,7 @@ required = {
     "url-memory.schema.json": {"$schema", "$id", "title", "type", "properties"},
     "editorial-state.schema.json": {"$schema", "$id", "title", "type"},
     "publisher-intelligence.schema.json": {"$schema", "$id", "title", "type", "properties"},
+    "rank-smart-audit.schema.json": {"$schema", "$id", "title", "type", "properties"},
 }
 
 errors = []
