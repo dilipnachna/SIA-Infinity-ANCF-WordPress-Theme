@@ -56,14 +56,25 @@ function sia_ancf_news_fallback_menu(): void {
     echo '</ul>';
 }
 
+function sia_ancf_news_home_excluded_category_ids(): array {
+    $ids = get_option('sia_ancf_home_excluded_categories', []);
+    if (!is_array($ids)) {
+        return [];
+    }
+
+    return array_values(array_unique(array_filter(array_map('absint', $ids))));
+}
+
 function sia_ancf_news_section_categories(int $limit = 4): array {
+    $excluded = sia_ancf_news_home_excluded_category_ids();
     $categories = get_categories([
         'taxonomy'   => 'category',
         'parent'     => 0,
         'hide_empty' => true,
         'orderby'    => 'count',
         'order'      => 'DESC',
-        'number'     => max(8, $limit * 2),
+        'number'     => max(12, $limit * 3),
+        'exclude'    => $excluded,
     ]);
 
     $categories = array_values(array_filter($categories, static function ($category): bool {
@@ -147,6 +158,79 @@ function sia_ancf_news_query_ids(array $args): array {
     ], $args));
 
     return array_map('intval', $query->posts);
+}
+
+function sia_ancf_news_home_meta_query(?string $placement = null): array {
+    $meta_query = [
+        'relation' => 'AND',
+        [
+            'relation' => 'OR',
+            [
+                'key' => '_sia_home_eligible',
+                'compare' => 'NOT EXISTS',
+            ],
+            [
+                'key' => '_sia_home_eligible',
+                'value' => '1',
+                'compare' => '=',
+            ],
+        ],
+        [
+            'relation' => 'OR',
+            [
+                'key' => '_sia_home_exclude',
+                'compare' => 'NOT EXISTS',
+            ],
+            [
+                'key' => '_sia_home_exclude',
+                'value' => '1',
+                'compare' => '!=',
+            ],
+        ],
+    ];
+
+    if ($placement !== null) {
+        $meta_query[] = [
+            'key' => '_sia_home_placement',
+            'value' => sanitize_key($placement),
+            'compare' => '=',
+        ];
+    }
+
+    return $meta_query;
+}
+
+function sia_ancf_news_home_query_ids(array $args = [], ?string $placement = null): array {
+    $defaults = [
+        'posts_per_page' => 12,
+        'category__not_in' => sia_ancf_news_home_excluded_category_ids(),
+        'meta_query' => sia_ancf_news_home_meta_query($placement),
+    ];
+
+    if (isset($args['meta_query']) && is_array($args['meta_query'])) {
+        $defaults['meta_query'][] = $args['meta_query'];
+        unset($args['meta_query']);
+    }
+
+    return sia_ancf_news_query_ids(array_merge($defaults, $args));
+}
+
+function sia_ancf_news_fill_ids(array $preferred, array $fallback, int $limit, array $exclude = []): array {
+    $result = [];
+    $blocked = array_fill_keys(array_map('intval', $exclude), true);
+
+    foreach (array_merge($preferred, $fallback) as $post_id) {
+        $post_id = (int) $post_id;
+        if ($post_id <= 0 || isset($blocked[$post_id]) || in_array($post_id, $result, true)) {
+            continue;
+        }
+        $result[] = $post_id;
+        if (count($result) >= $limit) {
+            break;
+        }
+    }
+
+    return $result;
 }
 
 function sia_ancf_news_related_ids(int $post_id, int $limit = 3): array {
