@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sia-infinity.com/contracts/ancf/url-memory.schema.json",
+  "title": "SIA ANCF URL Memory Observation",
+  "type": "object",
+  "required": ["content_id", "url", "event", "observed_at"],
+  "properties": {
+    "content_id": {"type": "integer", "minimum": 1},
+    "url": {"type": "string", "format": "uri"},
+    "event": {"type": "string", "enum": ["snapshot", "slug_change", "status_change", "trash", "delete"]},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "post_status": {"type": ["string", "null"]},
+    "signals": {"type": "object"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sia-infinity.com/contracts/ancf/editorial-state.schema.json",
+  "title": "SIA ANCF Editorial State",
+  "type": "string",
+  "enum": ["idea", "draft", "research", "verify", "edit", "approve", "publish", "monitor", "update", "correct", "archive"]
+}

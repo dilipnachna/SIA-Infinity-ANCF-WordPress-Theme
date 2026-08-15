@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sia-infinity.com/contracts/ancf/story.schema.json",
+  "title": "SIA ANCF Story",
+  "type": "object",
+  "required": ["id", "headline", "editorial_state"],
+  "properties": {
+    "id": {"type": "integer", "minimum": 1},
+    "headline": {"type": "string", "minLength": 1},
+    "primary_silo_term_id": {"type": ["integer", "null"], "minimum": 1},
+    "content_type": {"type": "string", "enum": ["news", "breaking", "explainer", "analysis", "opinion", "guide", "live", "sponsored"]},
+    "editorial_state": {"type": "string"},
+    "author_entity_id": {"type": ["string", "null"]},
+    "entities": {"type": "array", "items": {"type": "string"}},
+    "location_entities": {"type": "array", "items": {"type": "string"}},
+    "ai_assistance": {"type": "string", "enum": ["none", "research", "draft", "edit", "mixed"]}
+  },
+  "additionalProperties": true
+}

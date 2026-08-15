@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sia-infinity.com/contracts/ancf/entity.schema.json",
+  "title": "SIA ANCF Entity",
+  "type": "object",
+  "required": ["id", "type", "name"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "type": {"type": "string", "enum": ["person", "organization", "place", "event", "topic"]},
+    "name": {"type": "string", "minLength": 1},
+    "url": {"type": ["string", "null"], "format": "uri"},
+    "same_as": {"type": "array", "items": {"type": "string", "format": "uri"}},
+    "expertise": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

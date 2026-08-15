@@ -1,0 +1,16 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build outputs
+dist/
+*.zip
+
+# Local WordPress/runtime
+wp-config.php
+.env
+.env.*
+vendor/
+node_modules/
