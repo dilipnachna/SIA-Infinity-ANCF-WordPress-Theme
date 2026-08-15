@@ -1,11 +1,11 @@
 # Rank Smart
 
-**Version:** 0.3.0-alpha.1  
+**Version:** 0.4.0-alpha.1  
 **Mode:** read-only
 
-Rank Smart is the SEO intelligence layer for SIA Infinity ANCF. The alpha release audits posts/pages and combines local WordPress signals with SIA URL Memory plus provider-ready evidence contracts.
+Rank Smart is the SEO intelligence layer for SIA Infinity ANCF. In v0.4 its SEO authority boundary is unchanged: it audits posts/pages, local URL history and provider-ready evidence without taking over production SEO output.
 
-## What v0.3 does
+## What Rank Smart currently does
 
 - shows a read-only SEO audit on posts and pages;
 - observes the current permalink and WordPress canonical candidate;
@@ -17,7 +17,7 @@ Rank Smart is the SEO intelligence layer for SIA Infinity ANCF. The alpha releas
 - calculates an evidence-based URL **change-risk** score;
 - integrates with the SIA Publisher Intelligence console when the SIA theme is active.
 
-## What v0.3 does not do
+## What it does not do
 
 It does not output SEO metadata or execute SEO changes. It does not change titles, meta, canonicals, robots, schema, sitemaps, redirects, URLs or content.
 
