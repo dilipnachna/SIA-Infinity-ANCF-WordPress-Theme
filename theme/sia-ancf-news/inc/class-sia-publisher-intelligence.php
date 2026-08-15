@@ -46,6 +46,7 @@ final class SIA_Publisher_Intelligence {
 
         echo '<div class="sia-pi-grid">';
         self::render_content_card($context);
+        self::render_homepage_card($context);
         self::render_url_card($context);
         self::render_rank_smart_card($context);
         self::render_ai_card($context);
@@ -53,7 +54,7 @@ final class SIA_Publisher_Intelligence {
         self::render_monetization_card($context);
         echo '</div>';
 
-        echo '<p class="sia-pi-note">v0.2 is an integration and decision-support shell. It does not emit canonical tags, redirects, schema, sitemaps, AI translations, paid links, or automatic publishing actions.</p>';
+        echo '<p class="sia-pi-note">Homepage authority is presentation-only. It does not change canonical tags, robots, redirects, schema, sitemaps, search indexing, AI publishing, or paid-link authority.</p>';
         do_action('sia_publisher_intelligence_after_sections', $post, $context);
     }
 
@@ -63,6 +64,16 @@ final class SIA_Publisher_Intelligence {
         $author = get_userdata((int) $post->post_author);
         $url_memory = self::url_memory_context($post->ID);
         $discover = self::discover_context($post, $primary_silo_id, $author);
+        $home_eligible_raw = get_post_meta($post->ID, '_sia_home_eligible', true);
+        $home_eligible = $home_eligible_raw === '' ? true : (bool) $home_eligible_raw;
+        $home_exclude = (bool) get_post_meta($post->ID, '_sia_home_exclude', true);
+        $home_placement = (string) (get_post_meta($post->ID, '_sia_home_placement', true) ?: 'normal');
+        $excluded_by_category = false;
+        $excluded_categories = function_exists('sia_ancf_news_home_excluded_category_ids') ? sia_ancf_news_home_excluded_category_ids() : [];
+        if ($excluded_categories) {
+            $post_categories = wp_get_post_categories($post->ID, ['fields' => 'ids']);
+            $excluded_by_category = (bool) array_intersect(array_map('intval', $post_categories), $excluded_categories);
+        }
 
         $integrations = [
             'rank_smart' => self::integration_status('rank_smart'),
@@ -81,6 +92,13 @@ final class SIA_Publisher_Intelligence {
             'url' => get_permalink($post->ID) ?: '',
             'url_memory' => $url_memory,
             'discover' => $discover,
+            'homepage' => [
+                'eligible' => $home_eligible,
+                'excluded' => $home_exclude,
+                'excluded_by_category' => $excluded_by_category,
+                'placement' => $home_placement,
+                'effective' => $home_eligible && !$home_exclude && !$excluded_by_category,
+            ],
             'integrations' => $integrations,
         ];
     }
@@ -155,6 +173,16 @@ final class SIA_Publisher_Intelligence {
         echo '</section>';
     }
 
+    private static function render_homepage_card(array $context): void {
+        $home = $context['homepage'];
+        echo '<section class="sia-pi-card"><h3>Homepage Authority</h3>';
+        self::status_row('Effective', ['active' => (bool) $home['effective'], 'label' => $home['effective'] ? 'Eligible' : 'Excluded']);
+        self::row('Placement', self::humanize((string) $home['placement']));
+        self::row('Post Control', $home['excluded'] ? 'Excluded' : ($home['eligible'] ? 'Eligible' : 'Not eligible'));
+        self::row('Category Rule', $home['excluded_by_category'] ? 'Excluded category' : 'Allowed');
+        echo '</section>';
+    }
+
     private static function render_url_card(array $context): void {
         $memory = $context['url_memory'];
         echo '<section class="sia-pi-card"><h3>URL Memory</h3>';
@@ -213,9 +241,6 @@ final class SIA_Publisher_Intelligence {
 
     private static function check_row(string $label, bool $ok): void {
         $status = $ok ? ['active' => true, 'label' => 'Ready'] : ['active' => false, 'label' => 'Review'];
-        if (!$ok) {
-            $status['label'] = 'Review';
-        }
         self::status_row($label, $status);
     }
 
