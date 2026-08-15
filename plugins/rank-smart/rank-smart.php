@@ -17,5 +17,7 @@ define('RANK_SMART_MODE', 'read-only');
 define('RANK_SMART_PATH', plugin_dir_path(__FILE__));
 
 require_once RANK_SMART_PATH . 'includes/class-rank-smart.php';
+require_once RANK_SMART_PATH . 'includes/class-rank-smart-publisher-bridge.php';
 
 Rank_Smart::boot();
+Rank_Smart_Publisher_Bridge::boot();
