@@ -1,12 +1,22 @@
 <?php get_header(); ?>
-<header class="archive-header"><h1><?php printf(esc_html__('Search results for: %s', 'sia-ancf-news'), esc_html(get_search_query())); ?></h1></header>
-<div class="sia-grid">
-<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
-<article <?php post_class('sia-card'); ?>>
-  <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-  <?php the_excerpt(); ?>
-</article>
-<?php endwhile; else : ?><p><?php esc_html_e('No results found.', 'sia-ancf-news'); ?></p><?php endif; ?>
+<div class="sia-archive-shell">
+  <header class="archive-header">
+    <p class="sia-eyebrow"><?php esc_html_e('Search', 'sia-ancf-news'); ?></p>
+    <h1><?php printf(esc_html__('Results for “%s”', 'sia-ancf-news'), esc_html(get_search_query())); ?></h1>
+  </header>
+
+  <?php if (have_posts()) : ?>
+    <div class="sia-archive-grid">
+      <?php while (have_posts()) : the_post(); ?>
+        <?php sia_ancf_news_render_card(get_the_ID()); ?>
+      <?php endwhile; ?>
+    </div>
+    <?php the_posts_pagination(); ?>
+  <?php else : ?>
+    <section class="sia-empty-state">
+      <p><?php esc_html_e('No matching stories found. Try another search.', 'sia-ancf-news'); ?></p>
+      <div style="max-width:520px;margin:18px auto 0"><?php get_search_form(); ?></div>
+    </section>
+  <?php endif; ?>
 </div>
-<?php the_posts_pagination(); ?>
 <?php get_footer(); ?>
