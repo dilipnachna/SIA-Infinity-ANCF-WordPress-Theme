@@ -4,6 +4,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+require_once __DIR__ . '/inc/class-sia-publisher-intelligence.php';
+
 function sia_ancf_news_setup(): void {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
@@ -20,3 +22,5 @@ function sia_ancf_news_assets(): void {
     wp_enqueue_style('sia-ancf-news', get_stylesheet_uri(), [], wp_get_theme()->get('Version'));
 }
 add_action('wp_enqueue_scripts', 'sia_ancf_news_assets');
+
+SIA_Publisher_Intelligence::boot();

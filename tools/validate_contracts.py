@@ -9,6 +9,7 @@ required = {
     "entity.schema.json": {"$schema", "$id", "title", "type", "properties"},
     "url-memory.schema.json": {"$schema", "$id", "title", "type", "properties"},
     "editorial-state.schema.json": {"$schema", "$id", "title", "type"},
+    "publisher-intelligence.schema.json": {"$schema", "$id", "title", "type", "properties"},
 }
 
 errors = []

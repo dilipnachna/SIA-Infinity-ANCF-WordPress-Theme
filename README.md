@@ -1,14 +1,14 @@
 # SIA Infinity ANCF for WordPress
 
-**Status:** v0.1.0-alpha.1 foundation / observe-first
+**Status:** v0.2.0-alpha.1 Publisher Intelligence / staging-first
 
-SIA Infinity ANCF for WordPress is the first WordPress implementation of the SIA Infinity publishing-intelligence architecture. It is intentionally designed as a **safe production bridge**: the first release observes, records, and models editorial/SEO state without taking over existing canonical, redirect, robots, sitemap, or schema output.
+SIA Infinity ANCF for WordPress is the WordPress implementation of the SIA Infinity publishing-intelligence architecture. v0.2 keeps the original safety-first foundation while turning the SIA ANCF News theme into a newsroom integration shell for future Rank Smart, SIA AI, Discover/News, analytics, revenue, and Brand Studio modules.
 
-## v0.1 safety invariant
+## Safety invariant
 
 > Existing production SEO output remains authoritative until explicitly migrated.
 
-The v0.1 plugins do **not** automatically:
+The current modules do **not** automatically:
 
 - change post URLs or permalink settings;
 - emit redirects;
@@ -17,7 +17,22 @@ The v0.1 plugins do **not** automatically:
 - replace Rank Math/Yoast schema;
 - modify XML or News sitemaps;
 - delete, merge, or noindex content;
-- publish AI-generated content.
+- translate or overwrite article content;
+- create English drafts without explicit user action;
+- add paid/sponsored links;
+- publish AI-generated or sponsored content.
+
+## Architecture
+
+```text
+SIA ANCF News Theme = newsroom interface
+SIA ANCF Core       = shared publishing metadata / governance
+Rank Smart          = future SEO authority
+SIA AI              = future Hindi → English / human-writing SaaS
+Brand Studio        = future monetization / sponsored-content workflow
+```
+
+The theme displays integration state but does not silently become SEO, AI, or monetization authority.
 
 ## Repository structure
 
@@ -30,38 +45,57 @@ plugins/
 
 theme/
   sia-ancf-news/
+    inc/class-sia-publisher-intelligence.php
 
 contracts/
   story.schema.json
   entity.schema.json
   url-memory.schema.json
   editorial-state.schema.json
+  publisher-intelligence.schema.json
 
 docs/
 tools/
 .github/workflows/
 ```
 
-## v0.1 modules
+## v0.2 modules
 
 ### SIA ANCF Core
-Provides the shared version, observe-only runtime mode, story metadata vocabulary, and a small admin status screen.
+Stores shared editorial metadata. v0.2 adds a durable commercial-content classification for editorial, sponsored article, guest contribution, brand story, and existing-content sponsorship.
 
 ### SIA URL Memory
-Creates an append-only WordPress table that records observed public URLs before/after edits, trashing, and deletion. It does not create redirects or block actions in v0.1.
+Maintains append-only local WordPress URL observations and records slug/status events. It remains observe-only and does not create redirects or block actions.
 
 ### SIA Entity & Author
-Adds structured author/newsroom metadata to WordPress users without changing public author-page markup or schema.
+Stores structured author/newsroom metadata without taking over public schema.
 
 ### SIA Semantic Intelligence
-Adds an explicit **Primary Semantic Silo** selection using an already-assigned WordPress category. It does not alter category URLs or render related posts in v0.1.
+Stores an explicit **Primary Semantic Silo** from an already-assigned WordPress category.
 
 ### SIA ANCF News Theme
-A lightweight standalone classic theme intended for staging. The theme is presentation-only; SEO authority remains outside the theme.
+A staging-first newsroom theme. v0.2 adds the **SIA Publisher Intelligence** editor console with six sections:
+
+- Content
+- URL Memory
+- Rank Smart
+- English / SIA AI
+- Discover Readiness
+- Monetization
+
+The console reads existing ANCF state and exposes integration hooks for future modules.
+
+## Publisher Intelligence extension points
+
+```php
+apply_filters('sia_publisher_intelligence_context', $context, $post);
+apply_filters('sia_publisher_integration_status', $integrations, $post);
+do_action('sia_publisher_intelligence_after_sections', $post, $context);
+```
+
+Rank Smart, SIA AI, and Brand Studio should integrate through contracts/hooks instead of hard-coding their logic into the theme.
 
 ## Primary Silo principle
-
-The WordPress equivalent of the SIA Blogger Primary Silo is an explicitly selected primary category:
 
 ```text
 Stable permalink
@@ -79,11 +113,13 @@ A post may have many categories/tags/entities, but only one Primary Semantic Sil
 
 ## URL Memory principle
 
-A URL is treated as a historical publishing asset, not a disposable string. The long-term design will combine:
+A URL is treated as a historical publishing asset, not a disposable string. The long-term design combines:
 
 ```text
 URL history
 + Search Console history
++ Analytics behaviour
++ AdSense/revenue evidence
 + backlink/referring-domain evidence
 + internal-link evidence
 + index state
@@ -91,28 +127,15 @@ URL history
 = safe KEEP / UPDATE / MERGE / 301 / NOINDEX / 410 decision
 ```
 
-v0.1 starts with local WordPress URL history only.
-
-## Relationship to SIA Infinity AI Blogger
-
-The Blogger implementation remains a separate platform adapter. ANCF WordPress will gradually extract shared platform-independent contracts for:
-
-- primary semantic silos;
-- entity identity;
-- semantic relationship graphs;
-- URL memory;
-- author/newsroom identity;
-- editorial state;
-- Discover/News readiness;
-- safe publishing governance.
+v0.2 still records local WordPress URL history only; external data connectors come later.
 
 ## Installation for development/staging
 
 1. Install and activate `sia-ancf-core`.
 2. Install `sia-url-memory`, `sia-entity-author`, and `sia-semantic-intelligence`.
 3. Keep the existing production SEO plugin active.
-4. Do **not** activate the SIA ANCF News theme on production before staging validation.
-5. Verify URL Memory records snapshots without changing public output.
+4. Activate the SIA ANCF News theme on staging first.
+5. Verify the Publisher Intelligence console reads metadata without changing public SEO output.
 
 ## Build release ZIPs
 
@@ -132,12 +155,17 @@ find plugins theme -name '*.php' -print0 | xargs -0 -n1 php -l
 ## Roadmap
 
 - v0.1: observe-first foundation, URL memory, semantic silo, author/entity metadata.
-- v0.2: read-only SEO audit engine and historical URL risk scoring.
-- v0.3: semantic relationship graph and contextual internal-link preview.
-- v0.4: News/Discover readiness audits and schema comparison mode.
-- v0.5: controlled SEO authority migration with explicit feature flags.
-- later: GSC memory, backlink evidence, editorial agents, Brand Studio, native ANCF CMS.
+- **v0.2: Publisher Intelligence UI + integration contracts + commercial-content classification.**
+- v0.3: Rank Smart read-only SEO intelligence and historical URL risk scoring.
+- v0.4: semantic relationship graph, contextual internal links, News/Discover intelligence.
+- v0.5: SIA AI Hindi → English publishing SaaS integration.
+- v0.6: Search Console + Analytics + AdSense intelligence.
+- v0.7: backlink / URL value intelligence.
+- v0.8: Brand Studio / guest-post marketplace.
+- v1.0: integrated SIA Publisher OS.
+
+See `docs/V0.2-PUBLISHER-INTELLIGENCE.md` for the v0.2 contract and safety boundaries.
 
 ## License
 
-License intentionally left **TBD** for the initial architecture skeleton. Choose the final open-source/commercial licensing model before public release.
+License intentionally remains **TBD** while the open-source/commercial boundary is being finalized.

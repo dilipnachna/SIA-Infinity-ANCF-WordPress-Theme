@@ -13,6 +13,14 @@ final class SIA_ANCF_Core {
         'idea', 'draft', 'research', 'verify', 'edit', 'approve', 'publish', 'monitor', 'update', 'correct', 'archive',
     ];
 
+    private const COMMERCIAL_TYPES = [
+        'editorial',
+        'sponsored_article',
+        'guest_contribution',
+        'brand_story',
+        'existing_content_sponsorship',
+    ];
+
     public static function boot(): void {
         add_action('init', [self::class, 'register_meta']);
         add_action('admin_menu', [self::class, 'register_admin_page']);
@@ -44,6 +52,14 @@ final class SIA_ANCF_Core {
             'sanitize_callback' => [self::class, 'sanitize_ai_assistance'],
             'auth_callback' => static fn() => current_user_can('edit_posts'),
         ]);
+
+        register_post_meta('post', '_sia_commercial_type', [
+            'type' => 'string',
+            'single' => true,
+            'show_in_rest' => false,
+            'sanitize_callback' => [self::class, 'sanitize_commercial_type'],
+            'auth_callback' => static fn() => current_user_can('edit_posts'),
+        ]);
     }
 
     public static function register_admin_page(): void {
@@ -63,7 +79,7 @@ final class SIA_ANCF_Core {
         echo '<div class="wrap"><h1>SIA Infinity ANCF</h1>';
         echo '<p><strong>Version:</strong> ' . esc_html(SIA_ANCF_CORE_VERSION) . '</p>';
         echo '<p><strong>Runtime mode:</strong> ' . esc_html(SIA_ANCF_RUNTIME_MODE) . '</p>';
-        echo '<p>Observe-first mode does not replace canonical, robots, redirects, schema, or sitemaps.</p></div>';
+        echo '<p>Publisher-intelligence mode observes and models editorial state. It does not replace canonical, robots, redirects, schema, sitemaps, or external SEO authority.</p></div>';
     }
 
     public static function register_story_meta_box(): void {
@@ -75,11 +91,13 @@ final class SIA_ANCF_Core {
         $content_type = get_post_meta($post->ID, '_sia_content_type', true) ?: 'news';
         $editorial_state = get_post_meta($post->ID, '_sia_editorial_state', true) ?: 'draft';
         $ai_assistance = get_post_meta($post->ID, '_sia_ai_assistance', true) ?: 'none';
+        $commercial_type = get_post_meta($post->ID, '_sia_commercial_type', true) ?: 'editorial';
 
         self::render_select('sia_content_type', 'Content type', self::CONTENT_TYPES, $content_type);
         self::render_select('sia_editorial_state', 'Editorial state', self::EDITORIAL_STATES, $editorial_state);
         self::render_select('sia_ai_assistance', 'AI assistance', ['none', 'research', 'draft', 'edit', 'mixed'], $ai_assistance);
-        echo '<p><em>v0.1 stores metadata only. It does not change front-end SEO output.</em></p>';
+        self::render_select('sia_commercial_type', 'Commercial type', self::COMMERCIAL_TYPES, $commercial_type);
+        echo '<p><em>v0.2 stores publishing metadata only. External SEO, AI, and monetization services remain separate authorities.</em></p>';
     }
 
     private static function render_select(string $name, string $label, array $values, string $selected): void {
@@ -106,6 +124,7 @@ final class SIA_ANCF_Core {
             'sia_content_type' => '_sia_content_type',
             'sia_editorial_state' => '_sia_editorial_state',
             'sia_ai_assistance' => '_sia_ai_assistance',
+            'sia_commercial_type' => '_sia_commercial_type',
         ];
         foreach ($map as $input => $meta_key) {
             if (isset($_POST[$input])) {
@@ -124,5 +143,9 @@ final class SIA_ANCF_Core {
 
     public static function sanitize_ai_assistance(string $value): string {
         return in_array($value, ['none', 'research', 'draft', 'edit', 'mixed'], true) ? $value : 'none';
+    }
+
+    public static function sanitize_commercial_type(string $value): string {
+        return in_array($value, self::COMMERCIAL_TYPES, true) ? $value : 'editorial';
     }
 }

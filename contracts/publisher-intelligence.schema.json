@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sia-infinity.com/contracts/publisher-intelligence.schema.json",
+  "title": "SIA Publisher Intelligence Context",
+  "type": "object",
+  "required": ["content", "url_memory", "integrations", "discover", "monetization"],
+  "properties": {
+    "content": {
+      "type": "object",
+      "properties": {
+        "content_type": {"type": "string"},
+        "editorial_state": {"type": "string"},
+        "primary_silo": {"type": ["string", "null"]},
+        "author": {"type": ["string", "null"]}
+      }
+    },
+    "url_memory": {
+      "type": "object",
+      "properties": {
+        "active": {"type": "boolean"},
+        "observations": {"type": "integer", "minimum": 0},
+        "last_event": {"type": ["string", "null"]},
+        "signal": {"type": "string"}
+      }
+    },
+    "integrations": {
+      "type": "object",
+      "properties": {
+        "rank_smart": {"$ref": "#/$defs/integration"},
+        "sia_ai": {"$ref": "#/$defs/integration"},
+        "brand_studio": {"$ref": "#/$defs/integration"}
+      }
+    },
+    "discover": {
+      "type": "object",
+      "properties": {
+        "large_image": {"type": "boolean"},
+        "author": {"type": "boolean"},
+        "primary_silo": {"type": "boolean"},
+        "published": {"type": "boolean"}
+      }
+    },
+    "monetization": {
+      "type": "object",
+      "properties": {
+        "commercial_type": {
+          "enum": ["editorial", "sponsored_article", "guest_contribution", "brand_story", "existing_content_sponsorship"]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "integration": {
+      "type": "object",
+      "required": ["active", "label"],
+      "properties": {
+        "active": {"type": "boolean"},
+        "label": {"type": "string"}
+      }
+    }
+  }
+}
