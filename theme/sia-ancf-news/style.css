@@ -3,7 +3,7 @@ Theme Name: SIA ANCF News
 Theme URI: https://sia-infinity.com/
 Author: SIA Infinity
 Description: Newsroom-first WordPress theme for SIA Infinity ANCF with Publisher Intelligence integration UI. SEO authority remains in plugins/services.
-Version: 0.4.1-alpha.1
+Version: 0.4.2-alpha.1
 Requires PHP: 8.1
 Text Domain: sia-ancf-news
 */
@@ -460,6 +460,7 @@ button { cursor: pointer; }
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.08rem, 1.4vw, 1.22rem);
   line-height: 1.82;
+  overflow-wrap: anywhere;
 }
 .entry-content > * { max-width: 100%; }
 .entry-content > * + * { margin-top: 1.25em; }
@@ -476,6 +477,22 @@ button { cursor: pointer; }
 }
 .entry-content figure { margin-inline: 0; }
 .entry-content figcaption { margin-top: 7px; color: var(--sia-muted); font-family: Inter, sans-serif; font-size: .75rem; }
+.entry-content .wp-block-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.entry-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Inter, ui-sans-serif, sans-serif;
+  font-size: .92rem;
+  line-height: 1.5;
+}
+.entry-content th,
+.entry-content td {
+  padding: .65em .75em;
+  border: 1px solid var(--sia-line);
+  text-align: left;
+  vertical-align: top;
+}
+.entry-content th { background: var(--sia-soft); font-weight: 750; }
 .author-box {
   margin-top: 38px;
   padding: 22px;
@@ -588,6 +605,7 @@ button { cursor: pointer; }
   .sia-home-section { padding-top: 32px; }
   .entry-header h1 { font-size: clamp(2.15rem, 11vw, 3.3rem); }
   .entry-content { font-size: 1.08rem; line-height: 1.75; }
+  .entry-content table { min-width: 560px; }
   .sia-footer-grid { grid-template-columns: 1fr; gap: 28px; }
   .sia-footer-grid > section:first-child { grid-column: auto; }
   .sia-footer-bottom { display: grid; }
