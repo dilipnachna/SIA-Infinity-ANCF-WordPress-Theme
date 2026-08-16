@@ -7,6 +7,8 @@ if (!defined('ABSPATH')) {
 require_once __DIR__ . '/inc/class-sia-publisher-intelligence.php';
 
 function sia_ancf_news_setup(): void {
+    load_theme_textdomain('sia-ancf-news', get_template_directory() . '/languages');
+
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
     add_theme_support('automatic-feed-links');
@@ -15,6 +17,7 @@ function sia_ancf_news_setup(): void {
     add_theme_support('editor-styles');
     add_theme_support('html5', ['search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script']);
     add_theme_support('custom-logo', ['height' => 160, 'width' => 640, 'flex-height' => true, 'flex-width' => true]);
+    add_editor_style('style.css');
 
     add_image_size('sia-news-hero', 1200, 675, true);
     add_image_size('sia-news-card', 720, 405, true);
@@ -66,7 +69,43 @@ function sia_ancf_news_home_excluded_category_ids(): array {
 }
 
 function sia_ancf_news_section_categories(int $limit = 4): array {
+    $limit = max(1, $limit);
     $excluded = sia_ancf_news_home_excluded_category_ids();
+    $excluded_map = array_fill_keys($excluded, true);
+    $ordered = [];
+    $seen = [];
+
+    // When editors assign a Primary Menu, its top-level category order becomes
+    // the newsroom section order. This gives editorial control without creating
+    // another theme-specific category-order setting.
+    $locations = get_nav_menu_locations();
+    if (!empty($locations['primary'])) {
+        $items = wp_get_nav_menu_items((int) $locations['primary']);
+        if (is_array($items)) {
+            foreach ($items as $item) {
+                if ((int) $item->menu_item_parent !== 0 || $item->type !== 'taxonomy' || $item->object !== 'category') {
+                    continue;
+                }
+
+                $term_id = absint($item->object_id);
+                if ($term_id <= 0 || isset($excluded_map[$term_id]) || isset($seen[$term_id])) {
+                    continue;
+                }
+
+                $term = get_term($term_id, 'category');
+                if (!$term instanceof WP_Term || is_wp_error($term) || $term->slug === 'uncategorized' || (int) $term->count <= 0) {
+                    continue;
+                }
+
+                $ordered[] = $term;
+                $seen[$term_id] = true;
+                if (count($ordered) >= $limit) {
+                    return $ordered;
+                }
+            }
+        }
+    }
+
     $categories = get_categories([
         'taxonomy'   => 'category',
         'parent'     => 0,
@@ -74,14 +113,41 @@ function sia_ancf_news_section_categories(int $limit = 4): array {
         'orderby'    => 'count',
         'order'      => 'DESC',
         'number'     => max(12, $limit * 3),
-        'exclude'    => $excluded,
+        'exclude'    => array_values(array_unique(array_merge($excluded, array_map('intval', array_keys($seen))))),
     ]);
 
-    $categories = array_values(array_filter($categories, static function ($category): bool {
-        return isset($category->slug) && !in_array($category->slug, ['uncategorized'], true);
-    }));
+    foreach ($categories as $category) {
+        if (!isset($category->slug) || $category->slug === 'uncategorized' || isset($seen[(int) $category->term_id])) {
+            continue;
+        }
+        $ordered[] = $category;
+        $seen[(int) $category->term_id] = true;
+        if (count($ordered) >= $limit) {
+            break;
+        }
+    }
 
-    return array_slice($categories, 0, $limit);
+    return $ordered;
+}
+
+function sia_ancf_news_posts_index_url(): string {
+    $page_for_posts = absint(get_option('page_for_posts'));
+    if ($page_for_posts > 0) {
+        $url = get_permalink($page_for_posts);
+        if (is_string($url) && $url !== '') {
+            return $url;
+        }
+    }
+
+    $news_page = get_page_by_path('news');
+    if ($news_page instanceof WP_Post && $news_page->post_status === 'publish') {
+        $url = get_permalink($news_page);
+        if (is_string($url) && $url !== '') {
+            return $url;
+        }
+    }
+
+    return home_url('/');
 }
 
 function sia_ancf_news_post_category(int $post_id): ?WP_Term {
@@ -107,6 +173,29 @@ function sia_ancf_news_post_meta(int $post_id, bool $show_author = true): string
     }
 
     return implode('<span aria-hidden="true"> · </span>', $parts);
+}
+
+function sia_ancf_news_was_meaningfully_updated(int $post_id, int $minimum_seconds = 60): bool {
+    $published = (int) get_post_time('U', true, $post_id);
+    $modified = (int) get_post_modified_time('U', true, $post_id);
+
+    return $published > 0 && $modified > ($published + max(0, $minimum_seconds));
+}
+
+function sia_ancf_news_modified_label(int $post_id): string {
+    if (!sia_ancf_news_was_meaningfully_updated($post_id)) {
+        return '';
+    }
+
+    $date = get_the_modified_date('', $post_id);
+    $time = get_the_modified_time(get_option('time_format'), $post_id);
+
+    return sprintf(
+        /* translators: 1: modified date, 2: modified time */
+        __('Updated %1$s at %2$s', 'sia-ancf-news'),
+        $date,
+        $time
+    );
 }
 
 function sia_ancf_news_thumbnail(int $post_id, string $size = 'sia-news-card', string $class = ''): void {
