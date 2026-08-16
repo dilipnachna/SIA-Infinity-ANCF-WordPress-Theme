@@ -1,6 +1,6 @@
 # SIA Infinity ANCF for WordPress
 
-**Status:** v0.4.2 theme-hardening candidate / Rank Smart read-only / staging-first
+**Status:** v0.4.2-alpha.1 Theme Hardening / Rank Smart read-only / staging-first
 
 SIA Infinity ANCF for WordPress combines a newsroom-first WordPress theme with durable publishing metadata, URL memory and read-only SEO intelligence.
 
@@ -57,9 +57,9 @@ v0.4.1 separates search/publication identity from homepage presentation authorit
 
 A legacy URL can remain published, indexed and directly accessible while being excluded from the main newsroom homepage.
 
-## v0.4.2 Theme Hardening Candidate
+## v0.4.2 Theme Hardening
 
-The current hardening branch finishes presentation-level production gaps without giving the theme SEO authority:
+v0.4.2 finishes presentation-level production gaps without giving the theme SEO authority:
 
 - deduplicates Lead, Top Stories, Latest News, category sections and More Latest;
 - uses the assigned Primary Menu's top-level category order as homepage section priority;
@@ -68,6 +68,7 @@ The current hardening branch finishes presentation-level production gaps without
 - uses the 1200×675 newsroom hero size on stories and standalone pages;
 - separates sidebar and bottom Related Stories so the same recommendations are not repeated twice;
 - enables paginated post/page content;
+- adds responsive article-table rendering for mobile;
 - loads the text domain and editor stylesheet;
 - adds a dedicated CI hardening validator.
 
