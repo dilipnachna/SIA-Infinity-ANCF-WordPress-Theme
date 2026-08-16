@@ -26,6 +26,9 @@ $latest_ids = sia_ancf_news_home_query_ids([
     'posts_per_page' => 12,
     'post__not_in'   => $used_primary,
 ]);
+$latest_grid_ids = array_slice($latest_ids, 0, 4);
+$stream_candidates = array_slice($latest_ids, 4);
+$used_content_ids = array_values(array_unique(array_merge($used_primary, $latest_grid_ids)));
 $section_categories = sia_ancf_news_section_categories(4);
 ?>
 
@@ -75,14 +78,14 @@ $section_categories = sia_ancf_news_section_categories(4);
     </section>
   <?php endif; ?>
 
-  <?php if ($latest_ids) : ?>
+  <?php if ($latest_grid_ids) : ?>
     <section id="latest-news" class="sia-home-section">
       <div class="sia-section-heading">
         <h2><?php esc_html_e('Latest News', 'sia-ancf-news'); ?></h2>
-        <a href="<?php echo esc_url(get_post_type_archive_link('post') ?: home_url('/')); ?>"><?php esc_html_e('View all', 'sia-ancf-news'); ?></a>
+        <a href="<?php echo esc_url(sia_ancf_news_posts_index_url()); ?>"><?php esc_html_e('View all', 'sia-ancf-news'); ?></a>
       </div>
       <div class="sia-news-grid sia-news-grid--four">
-        <?php foreach (array_slice($latest_ids, 0, 4) as $latest_id) : ?>
+        <?php foreach ($latest_grid_ids as $latest_id) : ?>
           <?php sia_ancf_news_render_card($latest_id); ?>
         <?php endforeach; ?>
       </div>
@@ -94,15 +97,18 @@ $section_categories = sia_ancf_news_section_categories(4);
     $section_featured = sia_ancf_news_home_query_ids([
         'posts_per_page' => 4,
         'cat' => (int) $section_category->term_id,
+        'post__not_in' => $used_content_ids,
     ], 'section_featured');
     $section_fallback = sia_ancf_news_home_query_ids([
         'posts_per_page' => 12,
         'cat'            => (int) $section_category->term_id,
+        'post__not_in'   => $used_content_ids,
     ]);
-    $section_ids = sia_ancf_news_fill_ids($section_featured, $section_fallback, 4);
+    $section_ids = sia_ancf_news_fill_ids($section_featured, $section_fallback, 4, $used_content_ids);
     if (!$section_ids) {
         continue;
     }
+    $used_content_ids = array_values(array_unique(array_merge($used_content_ids, $section_ids)));
     ?>
     <section class="sia-home-section sia-category-section">
       <div class="sia-section-heading">
@@ -117,13 +123,18 @@ $section_categories = sia_ancf_news_section_categories(4);
     </section>
   <?php endforeach; ?>
 
-  <?php if (count($latest_ids) > 4) : ?>
+  <?php
+  $stream_ids = array_values(array_filter($stream_candidates, static function ($post_id) use ($used_content_ids): bool {
+      return !in_array((int) $post_id, $used_content_ids, true);
+  }));
+  ?>
+  <?php if ($stream_ids) : ?>
     <section class="sia-home-section sia-latest-stream">
       <div class="sia-section-heading">
         <h2><?php esc_html_e('More Latest', 'sia-ancf-news'); ?></h2>
       </div>
       <div class="sia-stream-list">
-        <?php foreach (array_slice($latest_ids, 4) as $stream_id) : ?>
+        <?php foreach ($stream_ids as $stream_id) : ?>
           <?php sia_ancf_news_render_card($stream_id, 'compact'); ?>
         <?php endforeach; ?>
       </div>
