@@ -19,6 +19,8 @@ jobs:
         run: python3 tools/validate_rank_smart_safety.py
       - name: Validate homepage editorial safety invariant
         run: python3 tools/validate_homepage_editorial_safety.py
+      - name: Validate theme hardening
+        run: python3 tools/validate_theme_hardening.py
       - name: Lint PHP
         run: find plugins theme -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: Build installable ZIPs
