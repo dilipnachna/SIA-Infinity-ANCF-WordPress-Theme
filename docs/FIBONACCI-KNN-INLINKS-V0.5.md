@@ -13,7 +13,7 @@ Observe -> compare -> recommend -> measure.
 Do not insert, rewrite, delete or redirect automatically in v0.5.
 ```
 
-The engine is recommendation-only. Editors or a future governed execution layer decide whether a suggested inlink is actually added.
+The engine is recommendation-only for contextual in-content links. Editors or a future governed execution layer decide whether a suggested inlink is actually added.
 
 ## Adaptive Fibonacci k
 
@@ -105,11 +105,42 @@ This is where Rank Smart can later combine normalized Search Console, Analytics,
 
 ## Existing-link gate
 
-A source document that already links to the target URL is excluded from recommendations. This prevents the engine from recommending duplicate inlinks simply because a page is semantically close.
+A source document that already links to the target URL is excluded from contextual inlink recommendations. This prevents the engine from recommending duplicate inlinks simply because a page is semantically close.
 
 ## Neighborhood confidence
 
 The displayed neighborhood confidence is a Fibonacci-rank-weighted mean of up to the five strongest final recommendations. Higher-ranked neighbors contribute more strongly than lower-ranked neighbors.
+
+## One semantic graph, multiple surfaces
+
+The same Fibonacci-kNN recommendation graph can drive more than one presentation or editorial surface.
+
+### Contextual in-content links
+
+The post editor receives source -> target recommendations plus the strongest source paragraph. This remains approval-based in v0.5; no article body is rewritten automatically.
+
+### Related Stories and sidebar
+
+The theme exposes a generic filter:
+
+```text
+sia_ancf_news_related_ids
+```
+
+When SIA Semantic Intelligence is active, `SIA_FKNN_Related_Content_Bridge` uses the same `sia_fibonacci_knn_recommendations` graph to rank Related Stories / More Stories. Semantic results are placed first and the theme's normal category-based results remain as fallback when the semantic neighborhood is too small.
+
+The bridge is deliberately separate from the theme:
+
+```text
+Theme = presentation contract
+Semantic Intelligence = ranking intelligence
+```
+
+If Semantic Intelligence is inactive, the theme continues to work with its existing category-based related-story fallback.
+
+### Frontend performance boundary
+
+Frontend related-story ranking is cached. The built-in bridge uses a bounded candidate scan for cache misses, and both the candidate limit and cache TTL are filterable. Large SaaS deployments can replace the local candidate/vector providers with a vector database or search service without changing the theme.
 
 ## Universality invariant
 
@@ -123,7 +154,7 @@ Core engine code must not contain:
 - category ID;
 - automatic content mutation authority.
 
-`tools/validate_fibonacci_knn_inlinks.py` enforces the main invariants in CI.
+`tools/validate_fibonacci_knn_inlinks.py` enforces the main invariants in CI, including the generic Related Stories bridge contract.
 
 ## WordPress UI
 
@@ -140,7 +171,7 @@ It shows:
 - source edit/view links;
 - neighborhood confidence.
 
-No internal link is inserted automatically in v0.5.
+No contextual internal link is inserted automatically in v0.5.
 
 ## Measurement loop
 
