@@ -53,7 +53,7 @@ $section_categories = sia_ancf_news_section_categories(4);
           <?php if ($lead_category) : ?>
             <a class="sia-eyebrow" href="<?php echo esc_url(get_category_link($lead_category)); ?>"><?php echo esc_html($lead_category->name); ?></a>
           <?php endif; ?>
-          <h1><a href="<?php echo esc_url(get_permalink($lead_id)); ?>"><?php echo esc_html(get_the_title($lead_id)); ?></a></h1>
+          <h1 style="font-size:clamp(1.65rem,2.3vw,2.55rem);line-height:1.15;letter-spacing:0;text-wrap:balance"><a href="<?php echo esc_url(get_permalink($lead_id)); ?>"><?php echo esc_html(get_the_title($lead_id)); ?></a></h1>
           <?php $lead_excerpt = trim((string) get_the_excerpt($lead_id)); ?>
           <?php if ($lead_excerpt !== '') : ?>
             <p><?php echo esc_html(wp_trim_words($lead_excerpt, 34)); ?></p>
