@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SIA Semantic Intelligence
  * Description: Universal semantic graph foundations with read-only Fibonacci kNN inlink recommendations.
- * Version: 0.5.0-alpha.1
+ * Version: 0.4.2-alpha.1
  * Requires PHP: 8.1
  * Author: SIA Infinity
  */
