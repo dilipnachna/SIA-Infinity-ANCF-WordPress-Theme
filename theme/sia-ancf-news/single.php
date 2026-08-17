@@ -5,6 +5,11 @@
   $post_id = get_the_ID();
   $category = sia_ancf_news_post_category($post_id);
   $related_pool = sia_ancf_news_related_ids($post_id, 8);
+  $related_pool = apply_filters('sia_ancf_news_related_ids', $related_pool, $post_id, 8);
+  $related_pool = is_array($related_pool) ? array_values(array_unique(array_filter(array_map('absint', $related_pool), static function (int $candidate_id) use ($post_id): bool {
+      return $candidate_id > 0 && $candidate_id !== (int) $post_id;
+  }))) : [];
+  $related_pool = array_slice($related_pool, 0, 8);
   $sidebar_ids = array_slice($related_pool, 0, 4);
   $related_ids = array_slice($related_pool, 4, 3);
   $excerpt = trim((string) get_the_excerpt($post_id));
