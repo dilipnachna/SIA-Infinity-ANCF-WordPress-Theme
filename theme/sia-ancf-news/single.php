@@ -22,7 +22,7 @@
         <?php if ($category) : ?>
           <a class="sia-eyebrow" href="<?php echo esc_url(get_category_link($category)); ?>"><?php echo esc_html($category->name); ?></a>
         <?php endif; ?>
-        <h1 style="font-size:clamp(2rem,3.1vw,3.25rem);line-height:1.12;letter-spacing:0;text-wrap:balance"><?php the_title(); ?></h1>
+        <h1 style="font-size:clamp(1.75rem,2.35vw,2.6rem);line-height:1.18;letter-spacing:0;text-wrap:balance"><?php the_title(); ?></h1>
         <?php if ($excerpt !== '') : ?>
           <p class="sia-dek"><?php echo esc_html($excerpt); ?></p>
         <?php endif; ?>
