@@ -13,7 +13,7 @@ for path, label in [
     (ENGINE, "Fibonacci kNN engine"),
     (VECTOR, "Universal Unicode vector provider"),
     (TEMPORAL, "Temporal-intent compatibility layer"),
-    (BRIDGE, "Related-content semantic bridge"),
+    (BRIDGE, "Surface-aware related-content bridge"),
     (SINGLE, "Theme single-story template"),
 ]:
     if not path.exists():
@@ -71,17 +71,36 @@ for needle in [
 
 for needle in [
     "final class SIA_FKNN_Related_Content_Bridge",
+    "SURFACE_POLICY_VERSION",
     "sia_ancf_news_related_ids",
+    "sia_ancf_news_more_stories_ids",
+    "sia_ancf_news_related_story_ids",
+    "rank_more_stories",
+    "rank_related_stories",
+    "passes_surface_gate",
+    "surface_score",
+    "sia_fknn_more_surface_minimum",
+    "sia_fknn_related_surface_minimum",
+    "sia_fknn_related_surface_allow_fallback",
+    "sia_fknn_surface_historical_multiplier",
     "sia_fibonacci_knn_recommendations",
     "sia_fknn_related_candidate_limit",
     "set_transient(",
-    "array_merge($semantic_ids, $fallback_ids)",
 ]:
     if needle not in bridge:
-        raise SystemExit(f"Missing Related Stories bridge invariant: {needle}")
+        raise SystemExit(f"Missing surface-aware Related Stories invariant: {needle}")
 
-if "apply_filters('sia_ancf_news_related_ids'" not in single:
-    raise SystemExit("Theme does not expose the generic related-content ranking filter")
+for needle in [
+    "apply_filters('sia_ancf_news_related_ids'",
+    "apply_filters('sia_ancf_news_more_stories_ids'",
+    "apply_filters('sia_ancf_news_related_story_ids'",
+]:
+    if needle not in single:
+        raise SystemExit(f"Theme surface contract missing: {needle}")
+
+# Related Stories must no longer be a blind second slice of one shared list.
+if "array_slice($related_pool, 4, 3)" in single:
+    raise SystemExit("Legacy shared-list slicing detected; surfaces must select independently")
 
 for needle in [
     "SIA_Unicode_Vector_Provider::boot();",
@@ -122,4 +141,4 @@ for forbidden_api in [
 if re.search(r"\$k\s*=\s*(5|8|13|21)\s*;", text):
     raise SystemExit("Fixed k detected; k must adapt from candidate_count")
 
-print("Fibonacci kNN + temporal intent + Related Stories universality invariants: OK")
+print("Fibonacci kNN + temporal intent + surface-aware recommendation invariants: OK")
