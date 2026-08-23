@@ -17,6 +17,7 @@ require_once __DIR__ . '/includes/class-sia-fibonacci-knn-inlinks.php';
 require_once __DIR__ . '/includes/class-sia-fknn-temporal-intent.php';
 require_once __DIR__ . '/includes/class-sia-fknn-related-content-bridge.php';
 require_once __DIR__ . '/includes/class-sia-fknn-surface-guard.php';
+require_once __DIR__ . '/includes/class-sia-fknn-freshness-age-guard.php';
 
 SIA_Semantic_Intelligence::boot();
 SIA_Unicode_Vector_Provider::boot();
@@ -24,3 +25,4 @@ SIA_Fibonacci_KNN_Inlinks::boot();
 SIA_FKNN_Temporal_Intent::boot();
 SIA_FKNN_Related_Content_Bridge::boot();
 SIA_FKNN_Surface_Guard::boot();
+SIA_FKNN_Freshness_Age_Guard::boot();
