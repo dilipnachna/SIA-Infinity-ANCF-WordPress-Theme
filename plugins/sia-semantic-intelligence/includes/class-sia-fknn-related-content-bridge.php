@@ -15,6 +15,7 @@ if (!defined('ABSPATH')) {
 final class SIA_FKNN_Related_Content_Bridge {
     private const CACHE_TTL = HOUR_IN_SECONDS;
     private const FRONTEND_CANDIDATE_LIMIT = 377;
+    private const GRAPH_CACHE_VERSION = 'fknn-temporal-v1';
 
     public static function boot(): void {
         add_filter('sia_ancf_news_related_ids', [self::class, 'rank_related'], 20, 3);
@@ -74,7 +75,8 @@ final class SIA_FKNN_Related_Content_Bridge {
     private static function cache_key(WP_Post $target, int $limit): string {
         $modified = (string) get_post_modified_time('U', true, $target);
         $corpus = (string) get_lastpostmodified('GMT');
-        return 'sia_fknn_rel_' . md5($target->ID . '|' . $modified . '|' . $corpus . '|' . $limit);
+        $graph_version = (string) apply_filters('sia_fknn_related_graph_version', self::GRAPH_CACHE_VERSION, $target);
+        return 'sia_fknn_rel_' . md5($target->ID . '|' . $modified . '|' . $corpus . '|' . $limit . '|' . $graph_version);
     }
 
     /**
