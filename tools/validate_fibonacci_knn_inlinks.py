@@ -4,6 +4,7 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 ENGINE = ROOT / "plugins" / "sia-semantic-intelligence" / "includes" / "class-sia-fibonacci-knn-inlinks.php"
 VECTOR = ROOT / "plugins" / "sia-semantic-intelligence" / "includes" / "class-sia-unicode-vector-provider.php"
+TEMPORAL = ROOT / "plugins" / "sia-semantic-intelligence" / "includes" / "class-sia-fknn-temporal-intent.php"
 BRIDGE = ROOT / "plugins" / "sia-semantic-intelligence" / "includes" / "class-sia-fknn-related-content-bridge.php"
 BOOT = ROOT / "plugins" / "sia-semantic-intelligence" / "sia-semantic-intelligence.php"
 SINGLE = ROOT / "theme" / "sia-ancf-news" / "single.php"
@@ -11,6 +12,7 @@ SINGLE = ROOT / "theme" / "sia-ancf-news" / "single.php"
 for path, label in [
     (ENGINE, "Fibonacci kNN engine"),
     (VECTOR, "Universal Unicode vector provider"),
+    (TEMPORAL, "Temporal-intent compatibility layer"),
     (BRIDGE, "Related-content semantic bridge"),
     (SINGLE, "Theme single-story template"),
 ]:
@@ -19,10 +21,11 @@ for path, label in [
 
 text = ENGINE.read_text(encoding="utf-8")
 vector = VECTOR.read_text(encoding="utf-8")
+temporal = TEMPORAL.read_text(encoding="utf-8")
 bridge = BRIDGE.read_text(encoding="utf-8")
 boot = BOOT.read_text(encoding="utf-8")
 single = SINGLE.read_text(encoding="utf-8")
-lower = (text + "\n" + vector + "\n" + bridge).lower()
+lower = (text + "\n" + vector + "\n" + temporal + "\n" + bridge).lower()
 
 required = [
     "final class SIA_Fibonacci_KNN_Inlinks",
@@ -54,6 +57,19 @@ for needle in [
         raise SystemExit(f"Missing Unicode vector invariant: {needle}")
 
 for needle in [
+    "final class SIA_FKNN_Temporal_Intent",
+    "'temporal' => 3",
+    "explicit_years",
+    "temporal_compatibility",
+    "sia_fknn_temporal_profile",
+    "sia_fknn_temporal_signal",
+    "no conflicting explicit time marker",
+    "fresh target vs explicit historical source",
+]:
+    if needle not in temporal:
+        raise SystemExit(f"Missing temporal-intent invariant: {needle}")
+
+for needle in [
     "final class SIA_FKNN_Related_Content_Bridge",
     "sia_ancf_news_related_ids",
     "sia_fibonacci_knn_recommendations",
@@ -70,6 +86,7 @@ if "apply_filters('sia_ancf_news_related_ids'" not in single:
 for needle in [
     "SIA_Unicode_Vector_Provider::boot();",
     "SIA_Fibonacci_KNN_Inlinks::boot();",
+    "SIA_FKNN_Temporal_Intent::boot();",
     "SIA_FKNN_Related_Content_Bridge::boot();",
 ]:
     if needle not in boot:
@@ -105,4 +122,4 @@ for forbidden_api in [
 if re.search(r"\$k\s*=\s*(5|8|13|21)\s*;", text):
     raise SystemExit("Fixed k detected; k must adapt from candidate_count")
 
-print("Fibonacci kNN inlink + Related Stories universality invariants: OK")
+print("Fibonacci kNN + temporal intent + Related Stories universality invariants: OK")
