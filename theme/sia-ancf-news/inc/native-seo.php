@@ -18,12 +18,16 @@ function sia_ancf_native_seo_enabled(): bool {
 
 /** News is a taxonomy decision: the configured News root and descendants. */
 function sia_ancf_news_category_id(): int {
-    $term = get_category_by_slug('news');
-    $fallback = $term instanceof WP_Term ? (int) $term->term_id : 0;
+    $selected = absint(get_option('sia_ancf_news_root_category', 0));
+    $term = $selected > 0 ? get_term($selected, 'category') : get_category_by_slug('news');
+    $fallback = $term instanceof WP_Term && !is_wp_error($term) ? (int) $term->term_id : 0;
     return max(0, (int) apply_filters('sia_ancf_news_category_id', $fallback));
 }
 
 function sia_ancf_post_is_news_category(int $post_id): bool {
+    if ((bool) get_option('sia_ancf_all_posts_are_news', false)) {
+        return get_post_type($post_id) === 'post';
+    }
     $root = sia_ancf_news_category_id();
     if ($root <= 0) {
         return false;

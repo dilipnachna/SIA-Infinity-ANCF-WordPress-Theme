@@ -34,7 +34,7 @@ final class SIA_Native_Entity_Author {
             </tr>
             <tr>
                 <th><label for="sia_expertise">Expertise</label></th>
-                <td><input class="regular-text" name="sia_expertise" id="sia_expertise" value="<?php echo esc_attr($expertise); ?>" placeholder="Jaisalmer, Rajasthan, AI, Travel"><p class="description">Comma-separated descriptive expertise only; no ranking claims.</p></td>
+                <td><input class="regular-text" name="sia_expertise" id="sia_expertise" value="<?php echo esc_attr($expertise); ?>" placeholder="Local news, public policy, technology, culture"><p class="description">Comma-separated descriptive expertise only; no ranking claims.</p></td>
             </tr>
             <tr>
                 <th><label for="sia_same_as">Identity URLs</label></th>
