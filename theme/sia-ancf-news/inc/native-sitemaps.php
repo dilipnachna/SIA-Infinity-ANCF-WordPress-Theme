@@ -16,16 +16,20 @@ function sia_ancf_sitemap_query(string $kind, int $page = 1): ?WP_Query {
         'orderby' => 'date', 'order' => 'DESC', 'meta_query' => $meta,
     ];
     if ($kind === 'news') {
-        $root = function_exists('sia_ancf_news_category_id') ? sia_ancf_news_category_id() : 0;
-        if ($root <= 0) {
-            return null;
+        // News-only publishers can opt in to news sitemap inclusion for all
+        // recent posts; other sites use an explicitly selected category tree.
+        if (!(bool) get_option('sia_ancf_all_posts_are_news', false)) {
+            $root = function_exists('sia_ancf_news_category_id') ? sia_ancf_news_category_id() : 0;
+            if ($root <= 0) {
+                return null;
+            }
+            $args['tax_query'] = [[
+                'taxonomy' => 'category',
+                'field' => 'term_id',
+                'terms' => [$root],
+                'include_children' => true,
+            ]];
         }
-        $args['tax_query'] = [[
-            'taxonomy' => 'category',
-            'field' => 'term_id',
-            'terms' => [$root],
-            'include_children' => true,
-        ]];
         $args['date_query'] = [['column' => 'post_date_gmt', 'after' => gmdate('Y-m-d H:i:s', time() - 2 * DAY_IN_SECONDS), 'before' => gmdate('Y-m-d H:i:s'), 'inclusive' => true]];
     } elseif ($kind === 'video') {
         $args['meta_query'][] = ['key' => '_sia_video_schema', 'compare' => 'EXISTS'];

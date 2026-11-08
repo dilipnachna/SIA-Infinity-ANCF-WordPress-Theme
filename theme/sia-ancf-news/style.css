@@ -418,6 +418,10 @@ button { cursor: pointer; }
   gap: 46px;
   padding-top: 44px;
 }
+.sia-home-latest-columns--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .sia-home-latest-list { display: grid; gap: 0; }
 .sia-home-latest-list .sia-story-card--compact {
   padding-block: 15px;
