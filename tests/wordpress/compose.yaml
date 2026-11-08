@@ -1,0 +1,35 @@
+name: sia-ancf-wordpress-integration
+services:
+  db:
+    image: mariadb:11.4
+    container_name: sia-ancf-ci-db
+    restart: "no"
+    command: ["--innodb-buffer-pool-size=64M", "--max-connections=20", "--performance-schema=OFF"]
+    environment:
+      MARIADB_ROOT_PASSWORD: "${QA_ROOT_PASS}"
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: siaqa
+      MARIADB_PASSWORD: "${QA_DB_PASS}"
+    volumes:
+      - database:/var/lib/mysql
+    mem_limit: 384m
+  wordpress:
+    image: wordpress:php8.3-apache
+    container_name: sia-ancf-ci-wp
+    restart: "no"
+    depends_on: [db]
+    ports:
+      - "127.0.0.1:18087:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: siaqa
+      WORDPRESS_DB_PASSWORD: "${QA_DB_PASS}"
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: "1"
+    volumes:
+      - website:/var/www/html
+      - ./:/qa-scripts:ro
+    mem_limit: 384m
+volumes:
+  database:
+  website:

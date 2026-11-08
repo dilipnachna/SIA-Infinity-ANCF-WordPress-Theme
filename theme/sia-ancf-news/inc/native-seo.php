@@ -344,6 +344,15 @@ add_action('wp_head', static function (): void {
         echo '<link rel="canonical" href="' . esc_url($url) . '">' . "\n";
     }
     $description = trim(preg_replace('/\s+/u', ' ', wp_strip_all_tags(strip_shortcodes((string) $description))));
+    // A fresh WordPress site can have an empty tagline. Keep the homepage
+    // description valid without needing a third-party SEO plugin.
+    if ($description === '' && ($latest || is_front_page())) {
+        $site_name = trim(wp_strip_all_tags((string) get_bloginfo('name')));
+        if ($site_name !== '') {
+            /* translators: %s: website name. */
+            $description = sprintf(__('News, articles and updates from %s.', 'sia-ancf-news'), $site_name);
+        }
+    }
     if (!$is_custom_description) {
         $description = wp_html_excerpt($description, 160, '…');
     }

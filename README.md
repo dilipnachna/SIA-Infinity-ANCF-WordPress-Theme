@@ -22,7 +22,7 @@ If there are no news/article categories, the homepage uses normal posts automati
 
 ## Source and status
 
-- Theme: **v0.5.0-rc.10** (release candidate — verify on staging before production)
+- Theme: **v0.5.0-rc.11** (release candidate — verify on staging before production)
 - WordPress / PHP: **PHP 8.1+**
 - Theme source: [theme/sia-ancf-news/](theme/sia-ancf-news/)
 - Older standalone components: [plugins/](plugins/) (historical; not required to activate this theme)

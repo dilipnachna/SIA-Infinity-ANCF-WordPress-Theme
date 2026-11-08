@@ -17,6 +17,8 @@ assert "if ($term_id > 0)" in front
 assert "post__not_in" in front and "array_unique" in front
 assert "sia_ancf_news_category_id" in seo and "apply_filters" in seo
 assert "sia_ancf_all_posts_are_news" in seo
+assert "News, articles and updates from %s." in seo
+assert "is_front_page()" in seo
 assert "sia_ancf_news_root_category" in seo
 settings = (theme / "inc/native-theme-settings.php").read_text(encoding="utf-8")
 assert "customize_register" in settings and "sia_ancf_article_root_category" in settings
