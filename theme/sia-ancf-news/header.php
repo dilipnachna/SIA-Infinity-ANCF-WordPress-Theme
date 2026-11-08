@@ -34,10 +34,10 @@
         <?php if (has_custom_logo()) : ?>
           <?php the_custom_logo(); ?>
         <?php else : ?>
-          <a class="site-title" href="<?php echo esc_url(home_url('/')); ?>"><?php bloginfo('name'); ?></a>
+          <a class="site-title" href="<?php echo esc_url(home_url('/')); ?>"><?php echo esc_html(get_bloginfo('name')); ?></a>
         <?php endif; ?>
         <?php if (get_bloginfo('description')) : ?>
-          <p class="site-description"><?php bloginfo('description'); ?></p>
+          <p class="site-description"><?php echo esc_html(get_bloginfo('description')); ?></p>
         <?php endif; ?>
       </div>
 
@@ -46,7 +46,7 @@
           <summary aria-label="<?php esc_attr_e('Open search', 'sia-ancf-news'); ?>"><?php esc_html_e('Search', 'sia-ancf-news'); ?></summary>
           <div class="sia-search__panel"><?php get_search_form(); ?></div>
         </details>
-        <button class="sia-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
+        <button class="sia-menu-toggle" type="button" aria-label="<?php esc_attr_e('Menu', 'sia-ancf-news'); ?>" aria-expanded="false" aria-controls="site-navigation">
           <span class="sia-menu-toggle__icon" aria-hidden="true"></span>
           <span><?php esc_html_e('Menu', 'sia-ancf-news'); ?></span>
         </button>
@@ -65,6 +65,7 @@
       ]); ?>
     </div>
   </nav>
+  <?php do_action('sia_ancf_header_ad'); ?>
 </header>
 
 <main id="primary-content" class="sia-main">

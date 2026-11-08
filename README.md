@@ -1,133 +1,64 @@
-# SIA Infinity ANCF for WordPress
+# SIA Infinity ANCF News — WordPress
 
-**Status:** v0.4.2-alpha.1 Theme Hardening / Rank Smart read-only / staging-first
+**Theme source:** `0.5.0-rc.10` · **Source snapshot:** 8 November 2026
 
-SIA Infinity ANCF for WordPress combines a newsroom-first WordPress theme with durable publishing metadata, URL memory and read-only SEO intelligence.
+This repository now includes the **SIA ANCF News theme source deployed on the Hindi Jaisalmer News WordPress installation** at the snapshot date. It supersedes the previous 14-file theme source from v0.4.2-alpha.1. Existing Git history, contracts, legacy plugins, and earlier development documentation are retained.
 
-## Safety invariant
+## What is included
 
-> Presentation may change. Existing production SEO authority does not change unless explicitly migrated.
+- `theme/sia-ancf-news/` — 54-file source snapshot of SIA ANCF News v0.5.0-rc.10, including built-in newsroom, responsive templates, native SEO, sitemaps, NewsArticle/Article JSON-LD, author profiles, related-content modules, WebSub/IndexNow integration points and ad/analytics loaders.
+- `plugins/` and `contracts/` — **historical v0.4.2-alpha.1 suite components**, preserved for backward reference. Do not assume they are the same versions or active components running on the site.
+- `tools/` — build/validation tooling. `VERSION` tracks the **legacy plugin suite**; `THEME_VERSION` tracks the **theme**.
+- `docs/LIVE-THEME-SNAPSHOT-2026-11-08.md` — deployment source, provenance, security boundaries and audit.
+- `docs/SEO-AEO-GEO-AIO-AUDIT-2026-11-08.md` — observed strengths, gaps and next steps.
 
-The current release line does **not** automatically change URLs, redirects, canonicals, robots, schema, XML/News sitemaps, SEO titles/meta, publication state or article truth. Rank Math/Yoast/AIOSEO may remain active while Rank Smart observes evidence in read-only mode.
+## Safety / deployment contract
 
-## Architecture
+This repository is **public source code**, not a copy of WordPress content, the database or server credentials. It does not include `wp-config.php`, secrets, private keys, uploaded media, or production environment files.
 
-```text
-SIA ANCF News Theme = newsroom presentation + Publisher Intelligence UI
-SIA ANCF Core       = shared publishing metadata / governance
-SIA URL Memory      = append-only local URL history
-Entity & Author     = structured newsroom identity metadata
-Semantic Intelligence = Primary Semantic Silo metadata
-Rank Smart          = read-only SEO evidence + URL change-risk intelligence
-SIA AI              = future Hindi → English / human-writing SaaS
-Brand Studio        = future monetization / sponsored-content workflow
-```
+**Do not automatically deploy** these files or migrate plugins to a live site. Back up database and theme first; validate on an isolated WordPress staging copy, check PHP warnings, canonical URLs, XML/News sitemaps, Article/NewsArticle schema, ad impressions, mobile UI, redirects, cache behaviour and Core Web Vitals before any promotion.
 
-## v0.4 Newsroom Frontend
+### Versioning
 
-The theme is no longer a bare staging shell. v0.4 adds a responsive publication interface designed for a real news site:
+| Component | Version/status |
+| --- | --- |
+| SIA ANCF News theme | `0.5.0-rc.10` — source snapshot of live Hindi theme |
+| Legacy plugin suite in `plugins/` | `0.4.2-alpha.1` — historical source; not claimed production parity |
+| Existing docs/contracts | Retained historical development material |
 
-- publication top bar, brand row, search and accessible mobile navigation;
-- dynamic primary navigation with category fallback;
-- newsroom front page with latest-headline strip;
-- lead story + Top Stories layout;
-- Latest News grid;
-- dynamic category sections generated from existing top-level categories;
-- compact latest-news stream;
-- professional archive, search and author pages;
-- dedicated standalone page template;
-- story template with category, headline, deck, byline, update date, hero image, author box and related stories;
-- responsive footer and section discovery;
-- image placeholders when older posts have no featured image;
-- mobile, tablet and desktop layouts;
-- reduced-motion and keyboard-navigation support.
+## Current theme features
 
-The frontend does not hard-code one site's category IDs. It adapts to the site's existing WordPress categories and menus.
+The theme implements native functions for:
+- WordPress SEO metadata and JSON-LD graph with extension filters;
+- standard and news/video sitemap routes;
+- publisher and author metadata; optional entity fields;
+- native ad placement and interaction/fallback loading;
+- article rendering, related stories, category sections, mobile navigation and article TOC;
+- internal semantic modules, URL memory, IndexNow, WebSub and analytics integration points.
 
-## v0.4.1 Editorial Homepage Control
+Not all features have undergone independent end-to-end testing. `inc/native-entity-author.php` currently stores editor-supplied person/organization identity metadata; live author output is not automatically updated by those fields. See the audit for outstanding work.
 
-v0.4.1 separates search/publication identity from homepage presentation authority:
-
-- post-level Homepage Eligible control;
-- Lead / Top / Breaking / Section Featured placements;
-- explicit Exclude from main newsroom control;
-- category-level homepage exclusion;
-- Homepage Authority card in Publisher Intelligence;
-- safe fallback behaviour for legacy posts without new metadata.
-
-A legacy URL can remain published, indexed and directly accessible while being excluded from the main newsroom homepage.
-
-## v0.4.2 Theme Hardening
-
-v0.4.2 finishes presentation-level production gaps without giving the theme SEO authority:
-
-- deduplicates Lead, Top Stories, Latest News, category sections and More Latest;
-- uses the assigned Primary Menu's top-level category order as homepage section priority;
-- resolves the Latest News `View all` destination through the configured Posts page or a published `/news/` fallback;
-- detects same-day meaningful article updates by timestamp, not date-only comparison;
-- uses the 1200×675 newsroom hero size on stories and standalone pages;
-- separates sidebar and bottom Related Stories so the same recommendations are not repeated twice;
-- enables paginated post/page content;
-- adds responsive article-table rendering for mobile;
-- loads the text domain and editor stylesheet;
-- adds a dedicated CI hardening validator.
-
-See `docs/THEME-HARDENING-V0.4.2.md`.
-
-## Rank Smart
-
-Rank Smart remains read-only in this release line. It audits:
-
-- permalink and WordPress canonical candidate;
-- public/index candidate state;
-- title/slug facts;
-- featured-image width;
-- author and Primary Semantic Silo;
-- URL Memory observations and recorded slug changes;
-- existing SEO authority;
-- provider-ready slots for Search Console, Analytics, AdSense and backlinks;
-- evidence-based URL change risk.
-
-A LOW URL change-risk score is never permission to delete. Missing external data remains missing evidence.
-
-## Installation / staging
-
-1. Install and activate `sia-ancf-core`.
-2. Install and activate `sia-url-memory`.
-3. Install and activate `sia-entity-author`.
-4. Install and activate `sia-semantic-intelligence`.
-5. Install and activate `rank-smart`.
-6. Keep the existing production SEO plugin active.
-7. Install and activate `sia-ancf-news`.
-8. Assign the Primary Menu under WordPress menus if desired; its top-level category order also becomes the preferred homepage section order.
-9. Verify homepage, story, page, category, author, search and mobile rendering before removing the previous theme.
-
-## Build release ZIPs
+## Build and checks
 
 ```bash
+python3 tools/validate_contracts.py
+python3 tools/validate_rank_smart_safety.py
+python3 tools/validate_homepage_editorial_safety.py
+python3 tools/validate_theme_hardening.py
 python3 tools/package_release.py
 python3 tools/validate_staging_release.py
 ```
 
-CI validates contracts, Rank Smart read-only safety, homepage editorial safety, theme hardening, PHP syntax, WordPress component-version parity, installable ZIPs and the downloadable staging kit.
+PHP lint requires PHP 8.1+ and can be run with:
 
-## Roadmap
+```bash
+find plugins theme -name '*.php' -print0 | xargs -0 -n1 php -l
+```
 
-- v0.1: observe-first foundation, URL memory, semantic silo, author/entity metadata.
-- v0.2: Publisher Intelligence UI + integration contracts + commercial-content classification.
-- v0.3: Rank Smart read-only SEO intelligence + URL change-risk scoring.
-- v0.4: professional newsroom frontend + responsive publication templates.
-- v0.4.1: editorial homepage authority controls without changing search identity.
-- **v0.4.2: production theme hardening and newsroom deduplication.**
-- v0.5: semantic relationship graph + contextual internal links + News/Discover intelligence.
-- v0.6: Search Console connector and persistent search evidence.
-- v0.7: Analytics + AdSense + backlink / URL value intelligence.
-- v0.8: SIA AI Hindi → English publishing SaaS integration.
-- v0.9: Brand Studio / guest-post marketplace.
-- v1.0: integrated SIA Publisher OS.
+The build produces staging artifacts for both versions. The outer kit is **not** a WordPress-installable ZIP.
 
-See `docs/NEWSROOM-FRONTEND-V0.4.md`, `docs/EDITORIAL-HOMEPAGE-CONTROL-V0.4.1.md`, `docs/THEME-HARDENING-V0.4.2.md` and `docs/RANK-SMART-V0.3-READONLY.md` for current boundaries.
+## Licenses and attribution
 
-## License
+A definitive open-source or commercial license has **not** been selected. Do not assume that a public repository grants permission to redistribute or commercially relicense it. The historical codebase is retained with its existing copyright and attribution notices.
 
-License intentionally remains **TBD** while the open-source/commercial boundary is being finalized.
+Previous development notes: [v0.4.2 archive](docs/README-v0.4.2-historical.md).

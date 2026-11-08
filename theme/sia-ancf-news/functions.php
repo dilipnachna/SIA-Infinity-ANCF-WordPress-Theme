@@ -5,6 +5,29 @@ if (!defined('ABSPATH')) {
 }
 
 require_once __DIR__ . '/inc/class-sia-publisher-intelligence.php';
+require_once __DIR__ . '/inc/native-seo.php';
+require_once __DIR__ . '/inc/native-category-sections.php';
+require_once __DIR__ . '/inc/native-redirects.php';
+require_once __DIR__ . '/inc/native-ads.php';
+require_once __DIR__ . '/inc/native-toc.php';
+require_once __DIR__ . '/inc/native-sitemaps.php';
+require_once __DIR__ . '/inc/native-url-memory.php';
+require_once __DIR__ . '/inc/native-avatars.php';
+require_once __DIR__ . '/inc/native-copy-draft.php';
+require_once __DIR__ . '/inc/native-semantic.php';
+require_once __DIR__ . '/inc/native-rank-smart.php';
+require_once __DIR__ . '/inc/native-ancf-core.php';
+require_once __DIR__ . '/inc/native-analytics.php';
+require_once __DIR__ . '/inc/native-ga4.php';
+require_once __DIR__ . '/inc/native-websub.php';
+require_once __DIR__ . '/inc/native-webp.php';
+require_once __DIR__ . '/inc/native-indexnow.php';
+require_once __DIR__ . '/inc/native-faq.php';
+require_once __DIR__ . '/inc/native-plugin-migration.php';
+if (!class_exists('SIA_Entity_Author')) {
+    require_once __DIR__ . '/inc/native-entity-author.php';
+    SIA_Native_Entity_Author::boot();
+}
 
 function sia_ancf_news_setup(): void {
     load_theme_textdomain('sia-ancf-news', get_template_directory() . '/languages');
@@ -47,6 +70,16 @@ function sia_ancf_news_assets(): void {
     }
 }
 add_action('wp_enqueue_scripts', 'sia_ancf_news_assets');
+
+// Modern browsers render native emoji; avoid the extra detection script and
+// stylesheet on every anonymous page.
+remove_action('wp_head', 'print_emoji_detection_script', 7);
+remove_action('admin_print_scripts', 'print_emoji_detection_script');
+remove_action('wp_print_styles', 'print_emoji_styles');
+remove_action('admin_print_styles', 'print_emoji_styles');
+remove_filter('the_content_feed', 'wp_staticize_emoji');
+remove_filter('comment_text_rss', 'wp_staticize_emoji');
+remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
 
 function sia_ancf_news_fallback_menu(): void {
     $categories = sia_ancf_news_section_categories(6);
@@ -131,24 +164,39 @@ function sia_ancf_news_section_categories(int $limit = 4): array {
 }
 
 function sia_ancf_news_posts_index_url(): string {
-    $page_for_posts = absint(get_option('page_for_posts'));
-    if ($page_for_posts > 0) {
-        $url = get_permalink($page_for_posts);
-        if (is_string($url) && $url !== '') {
-            return $url;
-        }
-    }
-
-    $news_page = get_page_by_path('news');
-    if ($news_page instanceof WP_Post && $news_page->post_status === 'publish') {
-        $url = get_permalink($news_page);
-        if (is_string($url) && $url !== '') {
-            return $url;
-        }
-    }
-
-    return home_url('/');
+    return add_query_arg('sia_latest', '1', home_url('/'));
 }
+
+// A dedicated read-only archive avoids depending on a posts page that may
+// redirect to an unrelated category. No rewrite rules or database writes.
+add_filter('query_vars', static function (array $vars): array {
+    $vars[] = 'sia_latest';
+    return $vars;
+});
+add_action('pre_get_posts', static function (WP_Query $query): void {
+    if (is_admin() || !$query->is_main_query() || $query->get('sia_latest') !== '1') {
+        return;
+    }
+    $query->is_page = false;
+    $query->is_singular = false;
+    $query->is_home = true;
+    $query->is_404 = false;
+    $query->set('page_id', 0);
+    $query->set('pagename', '');
+    $query->set('post_type', 'post');
+    $query->set('post_status', 'publish');
+    $query->set('orderby', 'date');
+    $query->set('order', 'DESC');
+    $query->set('ignore_sticky_posts', true);
+    $query->set('category__not_in', sia_ancf_news_home_excluded_category_ids());
+});
+add_filter('template_include', static function (string $template): string {
+    if (get_query_var('sia_latest') === '1') {
+        $archive = locate_template('index.php');
+        return $archive ?: $template;
+    }
+    return $template;
+});
 
 function sia_ancf_news_post_category(int $post_id): ?WP_Term {
     $categories = get_the_category($post_id);
@@ -201,16 +249,21 @@ function sia_ancf_news_modified_label(int $post_id): string {
 function sia_ancf_news_thumbnail(int $post_id, string $size = 'sia-news-card', string $class = ''): void {
     $permalink = get_permalink($post_id);
     $label = sia_ancf_news_post_category($post_id);
+    $has_image = has_post_thumbnail($post_id);
+    $accessible_name = get_the_title($post_id);
+    if (!$has_image) {
+        $accessible_name .= ' — ' . ($label ? $label->name : get_bloginfo('name'));
+    }
 
-    echo '<a class="sia-media ' . esc_attr($class) . '" href="' . esc_url($permalink) . '" aria-label="' . esc_attr(get_the_title($post_id)) . '">';
-    if (has_post_thumbnail($post_id)) {
+    echo '<a class="sia-media ' . esc_attr($class) . '" href="' . esc_url($permalink) . '" aria-label="' . esc_attr($accessible_name) . '">';
+    if ($has_image) {
         echo get_the_post_thumbnail($post_id, $size, [
             'loading' => $size === 'sia-news-hero' ? 'eager' : 'lazy',
             'fetchpriority' => $size === 'sia-news-hero' ? 'high' : 'auto',
             'decoding' => 'async',
         ]);
     } else {
-        echo '<span class="sia-media-placeholder"><span>' . esc_html($label ? $label->name : get_bloginfo('name')) . '</span></span>';
+        echo '<span class="sia-media-placeholder" aria-hidden="true"><span>' . esc_html($label ? $label->name : get_bloginfo('name')) . '</span></span>';
     }
     echo '</a>';
 }
@@ -241,12 +294,18 @@ function sia_ancf_news_query_ids(array $args): array {
     $query = new WP_Query(array_merge([
         'post_type'           => 'post',
         'post_status'         => 'publish',
-        'ignore_sticky_posts' => false,
+        'ignore_sticky_posts' => true,
         'no_found_rows'       => true,
         'fields'              => 'ids',
     ], $args));
 
-    return array_map('intval', $query->posts);
+    $ids = array_map('intval', $query->posts);
+    // ID-only queries otherwise leave each card to fetch its own post, terms,
+    // and metadata. Prime them in batches before the template renders cards.
+    if ($ids && function_exists('_prime_post_caches')) {
+        _prime_post_caches($ids, true, true);
+    }
+    return $ids;
 }
 
 function sia_ancf_news_home_meta_query(?string $placement = null): array {

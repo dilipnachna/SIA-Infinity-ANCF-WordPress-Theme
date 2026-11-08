@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+THEME_VERSION = (ROOT / "THEME_VERSION").read_text(encoding="utf-8").strip()
 
 PLUGIN_ORDER = [
     "sia-ancf-core",
@@ -37,7 +38,7 @@ for plugin_name in PLUGIN_ORDER:
     pack(plugin, out)
     plugin_zips.append(out)
 
-theme_zip = DIST / f"{THEME_SLUG}-{VERSION}.zip"
+theme_zip = DIST / f"{THEME_SLUG}-{THEME_VERSION}.zip"
 pack(ROOT / "theme" / THEME_SLUG, theme_zip)
 
 source_release = DIST / f"SIA-Infinity-ANCF-WordPress-v{VERSION}-source.zip"
@@ -45,8 +46,14 @@ if source_release.exists():
     source_release.unlink()
 with ZipFile(source_release, "w", ZIP_DEFLATED) as zf:
     for path in sorted(ROOT.rglob("*")):
-        if path.is_file() and DIST not in path.parents:
-            zf.write(path, path.relative_to(ROOT))
+        relative = path.relative_to(ROOT)
+        # Never bundle git history, runtime secrets, local state or output artifacts.
+        unsafe_parts = {".git", ".env", ".venv", "node_modules", "vendor", "__pycache__", "backups", "dist"}
+        if (path.is_file() and DIST not in path.parents
+                and not any(part in unsafe_parts for part in relative.parts)
+                and not path.name.startswith(".env")
+                and path.suffix.lower() not in {".sql", ".sqlite", ".db", ".pem", ".key", ".log", ".tgz"}):
+            zf.write(path, relative)
 print(source_release)
 
 install_text = f"""# SIA Infinity ANCF WordPress — Staging Install Kit
@@ -69,13 +76,13 @@ WordPress: Plugins → Add New → Upload Plugin → Install Now → Activate.
 
 Upload:
 
-sia-ancf-news-{VERSION}.zip
+sia-ancf-news-{THEME_VERSION}.zip
 
 WordPress: Appearance → Themes → Add New → Upload Theme → Install Now → Activate.
 
 ## Safety
 
-Keep the existing production SEO plugin active during v0.3 staging validation. Rank Smart is read-only and does not replace canonical, robots, schema, sitemap, redirect, title, meta or URL authority.
+This is a mixed-version staging kit: the theme has its own VERSION and the legacy plugin suite remains at the earlier version. Do not automatically replace production plugins or theme. Validate on an isolated staging WordPress instance. The native SEO fallback needs separate canonical, robots, schema, sitemap and redirect tests.
 
 ## Smoke test
 
@@ -94,6 +101,7 @@ install_file.write_text(install_text, encoding="utf-8")
 manifest = {
     "suite": "SIA Infinity ANCF WordPress",
     "version": VERSION,
+    "theme_version": THEME_VERSION,
     "mode": "staging",
     "plugins_install_order": [path.name for path in plugin_zips],
     "theme": theme_zip.name,

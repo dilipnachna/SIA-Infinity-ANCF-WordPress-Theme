@@ -14,3 +14,14 @@ wp-config.php
 .env.*
 vendor/
 node_modules/
+
+# Prevent accidental publication of local backups and data
+*.sql
+*.sqlite
+*.sqlite3
+*.tgz
+*.tar.gz
+*.log
+*.pem
+*.key
+backups/

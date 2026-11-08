@@ -1,0 +1,195 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\nLanguage: hi_IN\n"
+
+msgid "Comments"
+msgstr "टिप्पणियाँ"
+
+msgid "Comments are closed."
+msgstr "टिप्पणियाँ बंद हैं।"
+
+msgid "Story not found"
+msgstr "खबर नहीं मिली"
+
+msgid "The page may have moved, changed address, or no longer be available."
+msgstr "यह पृष्ठ हट गया हो सकता है या इसका पता बदल गया है।"
+
+msgid "Return to the newsroom"
+msgstr "मुख्य पृष्ठ पर लौटें"
+
+msgid "No stories found in this section yet."
+msgstr "इस श्रेणी में अभी कोई खबर नहीं है।"
+
+msgid "Author"
+msgstr "लेखक"
+
+msgid "No published stories found for this author."
+msgstr "इस लेखक की कोई प्रकाशित खबर नहीं मिली।"
+
+msgid "Sections"
+msgstr "श्रेणियाँ"
+
+msgid "Information"
+msgstr "जानकारी"
+
+msgid "Home"
+msgstr "मुख्य पृष्ठ"
+
+msgid "RSS Feed"
+msgstr "आरएसएस फ़ीड"
+
+msgid "Independent publishing powered by SIA Infinity ANCF."
+msgstr "स्वतंत्र प्रकाशन।"
+
+msgid "Primary Menu"
+msgstr "मुख्य मेनू"
+
+msgid "Utility Menu"
+msgstr "उपयोगी लिंक मेनू"
+
+msgid "Footer Menu"
+msgstr "फुटर मेनू"
+
+msgid "Updated %1$s at %2$s"
+msgstr "अपडेट: %1$s, %2$s"
+
+msgid "Skip to content"
+msgstr "मुख्य सामग्री पर जाएँ"
+
+msgid "Latest News"
+msgstr "ताज़ा खबरें"
+
+msgid "Open search"
+msgstr "खोज खोलें"
+
+msgid "Search"
+msgstr "खोजें"
+
+msgid "Menu"
+msgstr "मेनू"
+
+msgid "Primary navigation"
+msgstr "मुख्य नेविगेशन"
+
+msgid "No stories found."
+msgstr "कोई खबर नहीं मिली।"
+
+msgid "Latest headlines"
+msgstr "ताज़ा सुर्खियाँ"
+
+msgid "Breaking"
+msgstr "बड़ी खबर"
+
+msgid "Latest"
+msgstr "ताज़ा"
+
+msgid "Top stories"
+msgstr "प्रमुख खबरें"
+
+msgid "Top Stories"
+msgstr "प्रमुख खबरें"
+
+msgid "Your newsroom is ready. Publish or mark a story as homepage eligible to build the front page."
+msgstr "मुख्य पृष्ठ बनाने के लिए कोई खबर प्रकाशित करें या उसे मुख्य पृष्ठ के लिए चुनें।"
+
+msgid "More News"
+msgstr "और खबरें"
+
+msgid "View all"
+msgstr "सभी देखें"
+
+msgid "More stories"
+msgstr "और खबरें"
+
+msgid "More Latest"
+msgstr "अन्य खबरें"
+
+msgid "Results for “%s”"
+msgstr "“%s” के लिए खोज परिणाम"
+
+msgid "No matching stories found. Try another search."
+msgstr "कोई खबर नहीं मिली। कुछ और खोजें।"
+
+msgid "By"
+msgstr "लेखक:"
+
+msgid "Related Stories"
+msgstr "संबंधित खबरें"
+
+msgid "More Stories"
+msgstr "और खबरें"
+
+msgid "Search appearance"
+msgstr "सर्च में दिखने की जानकारी"
+
+msgid "Search description"
+msgstr "सर्च विवरण"
+
+msgid "Ask search engines not to index this page"
+msgstr "सर्च इंजनों से इस पृष्ठ को इंडेक्स न करने को कहें"
+
+msgid "Ad placements"
+msgstr "विज्ञापन स्थान"
+
+msgid "AdSense publisher ID"
+msgstr "AdSense प्रकाशक आईडी"
+
+msgid "Header"
+msgstr "हेडर"
+
+msgid "After article title"
+msgstr "लेख के शीर्षक के बाद"
+
+msgid "After article"
+msgstr "लेख के बाद"
+
+msgid "Slot ID"
+msgstr "स्लॉट आईडी"
+
+msgid "Advertisement"
+msgstr "विज्ञापन"
+
+msgid "Not permitted."
+msgstr "अनुमति नहीं है।"
+
+msgid "Invalid publisher ID."
+msgstr "प्रकाशक आईडी गलत है।"
+
+msgid "Invalid or missing slot ID."
+msgstr "स्लॉट आईडी गलत है या भरी नहीं गई है।"
+
+msgid "Contents"
+msgstr "विषय सूची"
+
+
+msgid "Analytics choices"
+msgstr "एनालिटिक्स की पसंद"
+
+msgid "Allow analytics to help us understand site usage? This choice applies to analytics only."
+msgstr "साइट के उपयोग को समझने के लिए क्या आप एनालिटिक्स की अनुमति देते हैं? यह विकल्प केवल एनालिटिक्स पर लागू है।"
+
+msgid "Allow analytics"
+msgstr "एनालिटिक्स की अनुमति दें"
+
+msgid "Decline analytics"
+msgstr "एनालिटिक्स अस्वीकार करें"
+
+msgid "Analytics tag"
+msgstr "एनालिटिक्स टैग"
+
+msgid "GA4 measurement ID"
+msgstr "GA4 मेज़रमेंट आईडी"
+
+msgid "Leave blank to disable."
+msgstr "बंद रखने के लिए खाली छोड़ें।"
+
+msgid "WebSub publishing"
+msgstr "WebSub प्रकाशन"
+
+msgid "Copy to draft"
+msgstr "ड्राफ्ट की प्रतिलिपि बनाएँ"
+
+msgid "Local analytics archive"
+msgstr "स्थानीय एनालिटिक्स संग्रह"
+
+msgid "Video unavailable: exclude video from structured data and video sitemap"
+msgstr "वीडियो उपलब्ध नहीं है: इसे वीडियो schema और sitemap से बाहर रखें"

@@ -36,12 +36,17 @@ for token in required_theme:
     if token not in functions:
         errors.append(f"Theme functions missing homepage query token: {token}")
 
+# v0.5 uses category-stream selection. Legacy explicit lead/top/breaking
+# placement priority exists in historical plugin contracts but is not asserted
+# as an active front-page feature in the live theme snapshot.
 required_front_page = [
-    "'lead'",
-    "'top'",
-    "'breaking'",
-    "'section_featured'",
     "sia_ancf_news_home_query_ids",
+    "sia_ancf_news_fill_ids",
+    "$stream_ids('article'",
+    "$stream_ids('news'",
+    "post__not_in",
+    "array_unique",
+    "sia_ancf_post_is_news_category",
 ]
 for token in required_front_page:
     if token not in front_page:
