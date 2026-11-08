@@ -2,9 +2,9 @@
 <footer class="site-footer">
   <div class="sia-shell sia-footer-grid">
     <section>
-      <h2 class="sia-footer-title"><?php bloginfo('name'); ?></h2>
+      <h2 class="sia-footer-title"><?php echo esc_html(get_bloginfo('name')); ?></h2>
       <?php if (get_bloginfo('description')) : ?>
-        <p><?php bloginfo('description'); ?></p>
+        <p><?php echo esc_html(get_bloginfo('description')); ?></p>
       <?php endif; ?>
     </section>
 
@@ -36,7 +36,7 @@
     </section>
   </div>
   <div class="sia-shell sia-footer-bottom">
-    <span>&copy; <?php echo esc_html(wp_date('Y')); ?> <?php bloginfo('name'); ?></span>
+    <span>&copy; <?php echo esc_html(wp_date('Y')); ?> <?php echo esc_html(get_bloginfo('name')); ?></span>
     <span><?php esc_html_e('Independent publishing powered by SIA Infinity ANCF.', 'sia-ancf-news'); ?></span>
   </div>
 </footer>

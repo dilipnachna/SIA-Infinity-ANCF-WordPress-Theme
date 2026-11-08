@@ -4,9 +4,34 @@
   <?php
   $post_id = get_the_ID();
   $category = sia_ancf_news_post_category($post_id);
-  $related_pool = sia_ancf_news_related_ids($post_id, 8);
-  $sidebar_ids = array_slice($related_pool, 0, 4);
-  $related_ids = array_slice($related_pool, 4, 3);
+
+  // Build a broad fallback pool once. Surface-specific filters may independently
+  // rerank it from the same semantic graph; without the plugin this preserves
+  // the theme's native category-based behavior.
+  $related_pool = sia_ancf_news_related_ids($post_id, 13);
+  $related_pool = apply_filters('sia_ancf_news_related_ids', $related_pool, $post_id, 13);
+  $related_pool = is_array($related_pool) ? array_values(array_unique(array_filter(array_map('absint', $related_pool), static function (int $candidate_id) use ($post_id): bool {
+      return $candidate_id > 0 && $candidate_id !== (int) $post_id && get_post_type($candidate_id) === 'post' && get_post_status($candidate_id) === 'publish' && get_post_field('post_password', $candidate_id) === '';
+  }))) : [];
+  $related_pool = array_slice($related_pool, 0, 13);
+
+  $sidebar_fallback = array_slice($related_pool, 0, 4);
+  $sidebar_ids = apply_filters('sia_ancf_news_more_stories_ids', $sidebar_fallback, $post_id, 4, []);
+  $sidebar_ids = is_array($sidebar_ids) ? array_values(array_unique(array_filter(array_map('absint', $sidebar_ids), static function (int $candidate_id) use ($post_id): bool {
+      return $candidate_id > 0 && $candidate_id !== (int) $post_id && get_post_type($candidate_id) === 'post' && get_post_status($candidate_id) === 'publish' && get_post_field('post_password', $candidate_id) === '';
+  }))) : [];
+  $sidebar_ids = array_slice($sidebar_ids, 0, 4);
+
+  $related_fallback = array_values(array_filter($related_pool, static function (int $candidate_id) use ($sidebar_ids): bool {
+      return !in_array($candidate_id, $sidebar_ids, true);
+  }));
+  $related_fallback = array_slice($related_fallback, 0, 3);
+  $related_ids = apply_filters('sia_ancf_news_related_story_ids', $related_fallback, $post_id, 3, $sidebar_ids);
+  $related_ids = is_array($related_ids) ? array_values(array_unique(array_filter(array_map('absint', $related_ids), static function (int $candidate_id) use ($post_id, $sidebar_ids): bool {
+      return $candidate_id > 0 && $candidate_id !== (int) $post_id && !in_array($candidate_id, $sidebar_ids, true) && get_post_type($candidate_id) === 'post' && get_post_status($candidate_id) === 'publish' && get_post_field('post_password', $candidate_id) === '';
+  }))) : [];
+  $related_ids = array_slice($related_ids, 0, 3);
+
   $excerpt = trim((string) get_the_excerpt($post_id));
   $published = get_the_date('', $post_id);
   $modified_label = sia_ancf_news_modified_label($post_id);
@@ -17,7 +42,8 @@
         <?php if ($category) : ?>
           <a class="sia-eyebrow" href="<?php echo esc_url(get_category_link($category)); ?>"><?php echo esc_html($category->name); ?></a>
         <?php endif; ?>
-        <h1><?php the_title(); ?></h1>
+        <h1 style="font-size:clamp(1.75rem,2.35vw,2.6rem);line-height:1.18;letter-spacing:0;text-wrap:balance"><?php echo esc_html(get_the_title()); ?></h1>
+        <?php do_action('sia_ancf_after_article_title'); ?>
         <?php if ($excerpt !== '') : ?>
           <p class="sia-dek"><?php echo esc_html($excerpt); ?></p>
         <?php endif; ?>
@@ -38,6 +64,11 @@
         <?php the_content(); ?>
         <?php wp_link_pages(); ?>
       </div>
+      <?php do_action('sia_ancf_after_article_content'); ?>
+
+      <?php if (comments_open() || get_comments_number()) : ?>
+        <?php comments_template(); ?>
+      <?php endif; ?>
 
       <aside class="author-box">
         <strong><?php the_author_posts_link(); ?></strong>

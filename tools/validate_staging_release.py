@@ -7,6 +7,7 @@ from zipfile import ZipFile
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+THEME_VERSION = (ROOT / "THEME_VERSION").read_text(encoding="utf-8").strip()
 
 plugins = [
     "sia-ancf-core",
@@ -51,7 +52,7 @@ for slug in plugins:
             packaged_version = extract_header_version(zf.read(bootstrap).decode("utf-8"))
             if packaged_version != VERSION:
                 errors.append(
-                    f"{path.name}: packaged Version header {packaged_version!r} != release VERSION {VERSION!r}"
+                    f"{path.name}: packaged Version header {packaged_version!r} != legacy-suite VERSION {VERSION!r}"
                 )
 
 source = ROOT / "theme" / theme / "style.css"
@@ -59,12 +60,12 @@ if not source.exists():
     errors.append(f"missing theme stylesheet: {source.relative_to(ROOT)}")
 else:
     header_version = extract_header_version(source.read_text(encoding="utf-8"))
-    if header_version != VERSION:
+    if header_version != THEME_VERSION:
         errors.append(
-            f"{source.relative_to(ROOT)}: Version header {header_version!r} != release VERSION {VERSION!r}"
+            f"{source.relative_to(ROOT)}: Version header {header_version!r} != THEME_VERSION {THEME_VERSION!r}"
         )
 
-path = DIST / f"{theme}-{VERSION}.zip"
+path = DIST / f"{theme}-{THEME_VERSION}.zip"
 if not path.exists():
     errors.append(f"missing theme ZIP: {path.name}")
 else:
@@ -75,9 +76,9 @@ else:
             errors.append(f"{path.name}: missing {stylesheet}")
         else:
             packaged_version = extract_header_version(zf.read(stylesheet).decode("utf-8"))
-            if packaged_version != VERSION:
+            if packaged_version != THEME_VERSION:
                 errors.append(
-                    f"{path.name}: packaged Version header {packaged_version!r} != release VERSION {VERSION!r}"
+                    f"{path.name}: packaged Version header {packaged_version!r} != THEME_VERSION {THEME_VERSION!r}"
                 )
 
 kit = DIST / f"SIA-Infinity-ANCF-WordPress-Staging-Kit-v{VERSION}.zip"
@@ -89,7 +90,7 @@ else:
         required = {
             "INSTALL-STAGING.md",
             "staging-manifest.json",
-            f"theme/{theme}-{VERSION}.zip",
+            f"theme/{theme}-{THEME_VERSION}.zip",
             *{f"plugins/{slug}-{VERSION}.zip" for slug in plugins},
         }
         missing = sorted(required - names)
@@ -97,11 +98,13 @@ else:
             errors.append(f"{kit.name}: missing entries {missing}")
         manifest = json.loads(zf.read("staging-manifest.json").decode("utf-8"))
         if manifest.get("version") != VERSION:
-            errors.append("staging manifest version mismatch")
+            errors.append("staging manifest legacy-suite version mismatch")
+        if manifest.get("theme_version") != THEME_VERSION:
+            errors.append("staging manifest theme version mismatch")
         if manifest.get("outer_zip_installable_in_wordpress") is not False:
             errors.append("staging manifest must mark outer kit as non-installable")
 
 if errors:
     raise SystemExit("\n".join(errors))
 
-print(f"Installable staging release validated with synchronized component version {VERSION}")
+print(f"Staging release validated: theme {THEME_VERSION}, legacy plugin suite {VERSION}")

@@ -2,8 +2,8 @@
 Theme Name: SIA ANCF News
 Theme URI: https://sia-infinity.com/
 Author: SIA Infinity
-Description: Newsroom-first WordPress theme for SIA Infinity ANCF with Publisher Intelligence integration UI. SEO authority remains in plugins/services.
-Version: 0.4.2-alpha.1
+Description: Newsroom-first WordPress theme with optional native search metadata and Publisher Intelligence integration UI.
+Version: 0.5.0-rc.10
 Requires PHP: 8.1
 Text Domain: sia-ancf-news
 */
@@ -18,7 +18,7 @@ Text Domain: sia-ancf-news
   --sia-paper: #ffffff;
   --sia-navy: #071827;
   --sia-navy-2: #10283d;
-  --sia-gold: #c88b26;
+  --sia-gold: #825300;
   --sia-gold-soft: #f7ecd8;
   --sia-danger: #b42318;
   --sia-radius: 12px;
@@ -241,6 +241,17 @@ button { cursor: pointer; }
 .primary-menu li:focus-within > .sub-menu { display: block; }
 .primary-menu .sub-menu a { padding: 10px 11px; border-radius: 6px; }
 
+.sia-eyebrow { display: inline-flex; align-items: center; min-height: 24px; }
+.sia-story-card__title a { display: inline-block; min-height: 24px; }
+:focus-visible { outline: 3px solid #005fcc; outline-offset: 3px; }
+.sia-native-ad { min-height: 250px; min-width: 0; margin: 10px auto; text-align: center; }
+.sia-native-ad__label { display: block; font: 10px/1.2 sans-serif; color: #595959; }
+.sia-native-ad .adsbygoogle { display: block; width: 100%; }
+@media print { .sia-native-ad { display: none; } }
+.sia-native-toc { border: 1px solid #d4d4d4; border-radius: 8px; padding: 16px; margin: 20px 0; background: #f8fafc; }
+.sia-native-toc ul { margin: 8px 0 0; padding-inline-start: 24px; }
+.sia-native-toc a { display: inline-block; min-height: 24px; }
+
 /* Main */
 .sia-main { min-height: 58vh; padding-block: 24px 54px; }
 .sia-latest-strip {
@@ -323,6 +334,7 @@ button { cursor: pointer; }
   padding-bottom: 9px;
   border-bottom: 2px solid var(--sia-navy);
 }
+.sia-section-heading h1,
 .sia-section-heading h2 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
@@ -343,6 +355,77 @@ button { cursor: pointer; }
 .sia-top-stories .sia-story-card--compact:last-child { border-bottom: 0; }
 
 .sia-home-section { padding-top: 40px; }
+.sia-homepage { padding-bottom: 18px; }
+.sia-home-hero { padding-bottom: 42px; border-bottom: 1px solid var(--sia-line); }
+.sia-home-hero__heading { margin-bottom: 24px; }
+.sia-home-hero__heading h1 { font-size: clamp(1.8rem, 3vw, 2.6rem); }
+.sia-home-hero__leads {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+.sia-home-feature {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--sia-line);
+  border-radius: var(--sia-radius);
+  background: #fff;
+  box-shadow: var(--sia-shadow);
+}
+.sia-home-feature__media img,
+.sia-home-feature__media .sia-media-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.sia-home-feature__body { padding: 20px 22px 22px; }
+.sia-home-feature h2 {
+  margin: 8px 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.45rem, 2.4vw, 2.15rem);
+  line-height: 1.12;
+  letter-spacing: -.025em;
+}
+.sia-home-feature h2 a { text-decoration: none; }
+.sia-home-feature p { margin: 0 0 12px; color: #475569; font-size: .94rem; }
+.sia-stream-label {
+  display: inline-flex;
+  margin-right: 9px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--sia-navy);
+  color: #fff;
+  font-size: .67rem;
+  font-weight: 800;
+  letter-spacing: .055em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.sia-home-hero__more {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 28px;
+}
+.sia-home-hero__more .sia-story-card--compact {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.sia-home-hero__more .sia-story-card--compact .sia-story-card__title { font-size: 1.02rem; }
+.sia-home-latest-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 46px;
+  padding-top: 44px;
+}
+.sia-home-latest-list { display: grid; gap: 0; }
+.sia-home-latest-list .sia-story-card--compact {
+  padding-block: 15px;
+  border-bottom: 1px solid var(--sia-line);
+}
+.sia-home-latest-list .sia-story-card--compact:first-child { padding-top: 0; }
+.sia-home-latest-list .sia-story-card--compact:last-child { border-bottom: 0; }
+.sia-home-subcategory { content-visibility: auto; contain-intrinsic-size: 460px; }
 .sia-news-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -548,6 +631,7 @@ button { cursor: pointer; }
 
 @media (max-width: 1060px) {
   .sia-news-grid--four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sia-home-hero__more { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sia-lead-layout { grid-template-columns: minmax(0, 1.4fr) minmax(280px, .8fr); }
   .sia-single-layout { grid-template-columns: minmax(0, 1fr) 250px; gap: 42px; }
 }
@@ -564,6 +648,9 @@ button { cursor: pointer; }
   .primary-menu > li:first-child > a { padding-left: 0; }
   .primary-menu .sub-menu { display: block; position: static; min-width: 0; padding: 0 0 0 16px; border: 0; box-shadow: none; }
   .sia-lead-layout { grid-template-columns: 1fr; gap: 30px; }
+  .sia-home-hero__leads,
+  .sia-home-latest-columns { grid-template-columns: 1fr; }
+  .sia-home-latest-columns { gap: 38px; }
   .sia-top-stories { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 22px; }
   .sia-top-stories .sia-section-heading { grid-column: 1 / -1; }
   .sia-news-grid,
@@ -592,6 +679,11 @@ button { cursor: pointer; }
   .sia-latest-strip { grid-template-columns: 1fr; gap: 4px; margin-bottom: 18px; }
   .sia-latest-strip__items a:not(:first-child) { display: none; }
   .sia-lead-story h1 { font-size: clamp(2rem, 10.5vw, 3rem); }
+  .sia-home-hero { padding-bottom: 32px; }
+  .sia-home-hero__leads,
+  .sia-home-hero__more { grid-template-columns: 1fr; }
+  .sia-home-hero__more { gap: 20px; }
+  .sia-home-feature__body { padding: 17px 17px 19px; }
   .sia-top-stories { grid-template-columns: 1fr; }
   .sia-news-grid,
   .sia-news-grid--four,
@@ -615,3 +707,7 @@ button { cursor: pointer; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+.sia-analytics-consent { position: fixed; z-index: 999; inset: auto 1rem 1rem; max-width: 38rem; padding: 1rem; background: #fff; color: #111827; border: 1px solid #374151; box-shadow: 0 4px 24px #0003; }
+.sia-analytics-consent[hidden] { display: none; }
+.sia-analytics-consent button, .sia-analytics-change { padding: .5rem .8rem; }
