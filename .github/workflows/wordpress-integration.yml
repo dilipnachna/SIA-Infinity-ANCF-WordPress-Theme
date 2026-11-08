@@ -1,0 +1,23 @@
+name: WordPress Runtime Compatibility
+
+on:
+  pull_request:
+    paths:
+      - 'theme/sia-ancf-news/**'
+      - 'tests/wordpress/**'
+      - '.github/workflows/wordpress-integration.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'theme/sia-ancf-news/**'
+      - 'tests/wordpress/**'
+      - '.github/workflows/wordpress-integration.yml'
+
+jobs:
+  isolated-wordpress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test theme on disposable WordPress and MariaDB
+        run: bash tests/wordpress/run.sh
