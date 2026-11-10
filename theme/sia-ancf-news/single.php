@@ -5,11 +5,9 @@
   $post_id = get_the_ID();
   $category = sia_ancf_news_post_category($post_id);
 
-  // Build a broad fallback pool once. Surface-specific filters may independently
-  // rerank it from the same semantic graph; without the plugin this preserves
-  // the theme's native category-based behavior.
+  // The local four-signal ranker finds three topical matches. Sidebar output
+  // cannot claim or duplicate those higher-priority Related Stories.
   $related_pool = sia_ancf_news_related_ids($post_id, 13);
-  $related_pool = apply_filters('sia_ancf_news_related_ids', $related_pool, $post_id, 13);
   $related_pool = is_array($related_pool) ? array_values(array_unique(array_filter(array_map('absint', $related_pool), static function (int $candidate_id) use ($post_id): bool {
       return $candidate_id > 0 && $candidate_id !== (int) $post_id && get_post_type($candidate_id) === 'post' && get_post_status($candidate_id) === 'publish' && get_post_field('post_password', $candidate_id) === '';
   }))) : [];
@@ -86,7 +84,12 @@
           <div class="sia-section-heading"><h2><?php esc_html_e('Related Stories', 'sia-ancf-news'); ?></h2></div>
           <div class="sia-news-grid">
             <?php foreach ($related_ids as $related_id) : ?>
-              <?php sia_ancf_news_render_card($related_id); ?>
+              <article class="sia-story-card sia-story-card--standard sia-story-card--related">
+                <?php sia_ancf_news_thumbnail($related_id, 'sia-news-card'); ?>
+                <div class="sia-story-card__body">
+                  <h3 class="sia-story-card__title"><a href="<?php echo esc_url(get_permalink($related_id)); ?>"><?php echo esc_html(get_the_title($related_id)); ?></a></h3>
+                </div>
+              </article>
             <?php endforeach; ?>
           </div>
         </section>
