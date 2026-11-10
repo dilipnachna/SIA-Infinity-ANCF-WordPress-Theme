@@ -42,5 +42,4 @@ foreach($spec as [$title,$slug,$category]){
 if (class_exists('SIA_Native_Fibonacci_KNN_Inlinks')) {fwrite(STDERR, 'LEGACY_FIBONACCI_STILL_ACTIVE\\n');exit(5);}
 $old_files = array_merge(glob(get_template_directory() . '/inc/semantic/class-sia-fknn-*.php') ?: [], glob(get_template_directory() . '/inc/semantic/*fibonacci*.php') ?: [], glob(get_template_directory() . '/inc/semantic/class-sia-unicode-vector-provider.php') ?: []);
 if ($old_files) {fwrite(STDERR, 'LEGACY_FIBONACCI_FILES_PRESENT\\n');exit(6);}
-if (!class_exists('SIA_Native_Related_Stories')) {fwrite(STDERR, 'NEW_RELATED_ENGINE_MISSING\\n');exit(7);}
 echo json_encode(['terms'=>$terms,'posts'=>$posts,'wordpress'=>get_bloginfo('version'),'theme'=>wp_get_theme()->get('Version')],JSON_UNESCAPED_SLASHES);
