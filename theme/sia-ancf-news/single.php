@@ -5,32 +5,34 @@
   $post_id = get_the_ID();
   $category = sia_ancf_news_post_category($post_id);
 
-  // Build a broad fallback pool once. Surface-specific filters may independently
-  // rerank it from the same semantic graph; without the plugin this preserves
-  // the theme's native category-based behavior.
+  // The local four-signal ranker finds three topical matches. Sidebar output
+  // cannot claim or duplicate those higher-priority Related Stories.
   $related_pool = sia_ancf_news_related_ids($post_id, 13);
-  $related_pool = apply_filters('sia_ancf_news_related_ids', $related_pool, $post_id, 13);
   $related_pool = is_array($related_pool) ? array_values(array_unique(array_filter(array_map('absint', $related_pool), static function (int $candidate_id) use ($post_id): bool {
       return $candidate_id > 0 && $candidate_id !== (int) $post_id && get_post_type($candidate_id) === 'post' && get_post_status($candidate_id) === 'publish' && get_post_field('post_password', $candidate_id) === '';
   }))) : [];
   $related_pool = array_slice($related_pool, 0, 13);
 
-  $sidebar_fallback = array_slice($related_pool, 0, 4);
-  $sidebar_ids = apply_filters('sia_ancf_news_more_stories_ids', $sidebar_fallback, $post_id, 4, []);
-  $sidebar_ids = is_array($sidebar_ids) ? array_values(array_unique(array_filter(array_map('absint', $sidebar_ids), static function (int $candidate_id) use ($post_id): bool {
+  // Reserve the most relevant articles for the main Related Stories block
+  // BEFORE the sidebar claims any IDs. The sidebar is a secondary surface.
+  $related_fallback = array_slice($related_pool, 0, 3);
+  $related_ids = apply_filters('sia_ancf_news_related_story_ids', $related_fallback, $post_id, 3, []);
+  $related_ids = is_array($related_ids) ? array_values(array_unique(array_filter(array_map('absint', $related_ids), static function (int $candidate_id) use ($post_id): bool {
       return $candidate_id > 0 && $candidate_id !== (int) $post_id && get_post_type($candidate_id) === 'post' && get_post_status($candidate_id) === 'publish' && get_post_field('post_password', $candidate_id) === '';
   }))) : [];
-  $sidebar_ids = array_slice($sidebar_ids, 0, 4);
-
-  $related_fallback = array_values(array_filter($related_pool, static function (int $candidate_id) use ($sidebar_ids): bool {
-      return !in_array($candidate_id, $sidebar_ids, true);
-  }));
-  $related_fallback = array_slice($related_fallback, 0, 3);
-  $related_ids = apply_filters('sia_ancf_news_related_story_ids', $related_fallback, $post_id, 3, $sidebar_ids);
-  $related_ids = is_array($related_ids) ? array_values(array_unique(array_filter(array_map('absint', $related_ids), static function (int $candidate_id) use ($post_id, $sidebar_ids): bool {
-      return $candidate_id > 0 && $candidate_id !== (int) $post_id && !in_array($candidate_id, $sidebar_ids, true) && get_post_type($candidate_id) === 'post' && get_post_status($candidate_id) === 'publish' && get_post_field('post_password', $candidate_id) === '';
-  }))) : [];
   $related_ids = array_slice($related_ids, 0, 3);
+
+  // More Stories may use a broader/fresher pool, but it must not duplicate
+  // the higher-priority Related Stories recommendations.
+  $sidebar_fallback = array_values(array_filter($related_pool, static function (int $candidate_id) use ($related_ids): bool {
+      return !in_array($candidate_id, $related_ids, true);
+  }));
+  $sidebar_fallback = array_slice($sidebar_fallback, 0, 4);
+  $sidebar_ids = apply_filters('sia_ancf_news_more_stories_ids', $sidebar_fallback, $post_id, 4, $related_ids);
+  $sidebar_ids = is_array($sidebar_ids) ? array_values(array_unique(array_filter(array_map('absint', $sidebar_ids), static function (int $candidate_id) use ($post_id, $related_ids): bool {
+      return $candidate_id > 0 && $candidate_id !== (int) $post_id && !in_array($candidate_id, $related_ids, true) && get_post_type($candidate_id) === 'post' && get_post_status($candidate_id) === 'publish' && get_post_field('post_password', $candidate_id) === '';
+  }))) : [];
+  $sidebar_ids = array_slice($sidebar_ids, 0, 4);
 
   $excerpt = trim((string) get_the_excerpt($post_id));
   $published = get_the_date('', $post_id);
@@ -82,7 +84,12 @@
           <div class="sia-section-heading"><h2><?php esc_html_e('Related Stories', 'sia-ancf-news'); ?></h2></div>
           <div class="sia-news-grid">
             <?php foreach ($related_ids as $related_id) : ?>
-              <?php sia_ancf_news_render_card($related_id); ?>
+              <article class="sia-story-card sia-story-card--standard sia-story-card--related">
+                <?php sia_ancf_news_thumbnail($related_id, 'sia-news-card'); ?>
+                <div class="sia-story-card__body">
+                  <h3 class="sia-story-card__title"><a href="<?php echo esc_url(get_permalink($related_id)); ?>"><?php echo esc_html(get_the_title($related_id)); ?></a></h3>
+                </div>
+              </article>
             <?php endforeach; ?>
           </div>
         </section>

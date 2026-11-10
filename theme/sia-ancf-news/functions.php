@@ -16,6 +16,7 @@ require_once __DIR__ . '/inc/native-url-memory.php';
 require_once __DIR__ . '/inc/native-avatars.php';
 require_once __DIR__ . '/inc/native-copy-draft.php';
 require_once __DIR__ . '/inc/native-semantic.php';
+require_once __DIR__ . '/inc/native-related-stories.php';
 require_once __DIR__ . '/inc/native-rank-smart.php';
 require_once __DIR__ . '/inc/native-ancf-core.php';
 require_once __DIR__ . '/inc/native-analytics.php';
