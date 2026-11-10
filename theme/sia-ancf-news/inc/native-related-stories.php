@@ -218,7 +218,7 @@ final class SIA_Native_Related_Stories {
         foreach (is_array($tokens) ? $tokens : [] as $word) {
             $length = function_exists('mb_strlen') ? mb_strlen($word, 'UTF-8') : strlen($word);
             // Years, dates and other bare numerals are not topic identity.
-            if ($length < 2 || isset($stop[$word]) || preg_match('/^\\p{N}+$/u', $word)) {
+            if ($length < 2 || isset($stop[$word]) || preg_match('/^\p{N}+$/u', $word)) {
                 continue;
             }
             $vector[$word] = ($vector[$word] ?? 0.0) + $weight;
