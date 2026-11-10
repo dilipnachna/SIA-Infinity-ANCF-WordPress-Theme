@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SIA_Native_Related_Stories {
-    private const POLICY_VERSION = 'related-four-signals-v3-context-gate';
+    private const POLICY_VERSION = 'related-four-signals-v4-genre-stopwords';
     private const MAX_CANDIDATES = 420;
     private const CACHE_TTL = HOUR_IN_SECONDS;
 
@@ -203,15 +203,22 @@ final class SIA_Native_Related_Stories {
             'first', 'last', 'next', 'now', 'can', 'could', 'would', 'should', 'may', 'might',
             'man', 'woman', 'people', 'person', 'report', 'reports', 'reported', 'breaking',
             'city', 'district', 'state', 'government', 'official', 'officials', 'story',
+            // Genre and profile-template words carry no person/entity identity.
+            'biography', 'bio', 'profile', 'age', 'aged', 'wife', 'husband',
+            'children', 'kids', 'family', 'death', 'life', 'born', 'career',
+            'net', 'worth', 'income', 'faq', 'facts',
             'का', 'की', 'के', 'को', 'से', 'ने', 'में', 'पर', 'एक', 'है', 'थे', 'था',
             'और', 'यह', 'इस', 'लिए', 'तक', 'भी', 'अब', 'हुआ', 'हुई', 'खबर', 'समाचार',
             'नई', 'नया', 'नए', 'आज', 'कल', 'बड़ी', 'बड़ा', 'कहा', 'किस', 'क्या', 'कैसे',
             'लोग', 'जिला', 'जिले', 'सरकार', 'अधिकारी', 'रिपोर्ट', 'बताया', 'जानकारी',
+            'जीवनी', 'उम्र', 'पत्नी', 'पति', 'बच्चे', 'परिवार', 'मौत', 'जन्म',
+            'करियर', 'संपत्ति', 'कमाई', 'जानिए', 'कौन', 'प्रोफाइल',
         ], true);
         $vector = [];
         foreach (is_array($tokens) ? $tokens : [] as $word) {
             $length = function_exists('mb_strlen') ? mb_strlen($word, 'UTF-8') : strlen($word);
-            if ($length < 2 || isset($stop[$word])) {
+            // Years, dates and other bare numerals are not topic identity.
+            if ($length < 2 || isset($stop[$word]) || preg_match('/^\p{N}+$/u', $word)) {
                 continue;
             }
             $vector[$word] = ($vector[$word] ?? 0.0) + $weight;

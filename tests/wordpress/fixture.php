@@ -36,6 +36,10 @@ $spec=[
  ['James Talarico Campaign on Saturday Night Live','talarico-snl-campaign','civic'],
  ['How to Reach Jaisalmer by Train Flight and Road','travel-jaisalmer-road','culture'],
  ['Army Officer Injured in Jaisalmer Road Accident','jaisalmer-road-accident','civic'],
+ ['Michael Sanft Attorney Biography Age Wife Death','michael-sanft-bio','culture'],
+ ['Jensen Huang Biography Age Wife Nvidia Career','jensen-huang-bio','culture'],
+ ['Lori Mills Huang Biography Wife of Nvidia CEO Jensen Huang','lori-huang-bio','culture'],
+ ['Alice Huang Biography Nvidia Career Jensen Huang Family','alice-huang-bio','culture'],
 ];
 $posts=[];
 foreach($spec as [$title,$slug,$category]){
