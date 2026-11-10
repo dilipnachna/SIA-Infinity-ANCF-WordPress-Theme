@@ -31,12 +31,16 @@ $spec=[
  ['Solar Mission Satellite Update','solar-mission-satellite','science'],
  ['Solar Mission Rocket Progress','solar-mission-rocket','science'],
  ['Solar Mission Research Report','solar-mission-research','science'],
+ ['Fishermen Rescue Man Near Newport Beach','newport-fishermen-rescue','civic'],
+ ['Social Security Benefits Forecast 2032','benefits-forecast-2032','civic'],
+ ['James Talarico Campaign on Saturday Night Live','talarico-snl-campaign','civic'],
 ];
 $posts=[];
 foreach($spec as [$title,$slug,$category]){
  $body = str_starts_with($slug, 'solar-mission') ? '<p>Solar mission space research satellite and rocket launch details.</p><p>Mission progress and scientific coverage.</p>' : '<p>Fixture story for WordPress theme compatibility.</p><h2>Details</h2><p>Published test content.</p>';
  $id=wp_insert_post(['post_type'=>'post','post_status'=>'publish','post_title'=>$title,'post_name'=>$slug,'post_content'=>$body,'post_category'=>[$terms[$category]]],true);
  if(is_wp_error($id)){fwrite(STDERR,$id->get_error_message());exit(4);}
+ if (in_array($slug,['newport-fishermen-rescue','benefits-forecast-2032','talarico-snl-campaign'],true)) { wp_set_post_tags((int)$id,['USA'],false); }
  $posts[$slug]=(int)$id;
 }
 if (class_exists('SIA_Native_Fibonacci_KNN_Inlinks')) {fwrite(STDERR, 'LEGACY_FIBONACCI_STILL_ACTIVE\\n');exit(5);}
