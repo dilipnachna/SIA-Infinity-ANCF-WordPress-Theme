@@ -34,10 +34,14 @@ $spec=[
  ['Fishermen Rescue Man Near Newport Beach','newport-fishermen-rescue','civic'],
  ['Social Security Benefits Forecast 2032','benefits-forecast-2032','civic'],
  ['James Talarico Campaign on Saturday Night Live','talarico-snl-campaign','civic'],
+ ['How to Reach Jaisalmer by Train Flight and Road','travel-jaisalmer-road','culture'],
+ ['Army Officer Injured in Jaisalmer Road Accident','jaisalmer-road-accident','civic'],
 ];
 $posts=[];
 foreach($spec as [$title,$slug,$category]){
  $body = str_starts_with($slug, 'solar-mission') ? '<p>Solar mission space research satellite and rocket launch details.</p><p>Mission progress and scientific coverage.</p>' : '<p>Fixture story for WordPress theme compatibility.</p><h2>Details</h2><p>Published test content.</p>';
+ if ($slug === 'travel-jaisalmer-road') { $body = '<p>Tourist travel guide about reaching Jaisalmer by train flight bus and highway road routes.</p><p>Plan a comfortable holiday and book transport for the Rajasthan desert destination.</p>'; }
+ if ($slug === 'jaisalmer-road-accident') { $body = '<p>Army accident report: officers injured after military vehicle overturned near Jaisalmer.</p><p>Police registered a road accident case while the injured were taken to hospital.</p>'; }
  $id=wp_insert_post(['post_type'=>'post','post_status'=>'publish','post_title'=>$title,'post_name'=>$slug,'post_content'=>$body,'post_category'=>[$terms[$category]]],true);
  if(is_wp_error($id)){fwrite(STDERR,$id->get_error_message());exit(4);}
  if (in_array($slug,['newport-fishermen-rescue','benefits-forecast-2032','talarico-snl-campaign'],true)) { wp_set_post_tags((int)$id,['USA'],false); }
