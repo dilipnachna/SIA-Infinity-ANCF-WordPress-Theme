@@ -64,12 +64,10 @@ final class SIA_Native_FKNN_Related_Age_Diversity_Guard {
             }
         }
 
-        // Existing Related Stories are evaluated first, then the next graph-backed
-        // neighbor may fill a rejected stale slot. No raw fallback bypass exists.
-        $candidate_ids = array_values(array_unique(array_merge(
-            array_map('absint', $ids),
-            array_keys($by_source)
-        )));
+        // Only rerank candidates that passed the earlier Related Stories
+        // quality guard. Reintroducing every graph neighbor here bypasses that
+        // guard for fresh posts and can display unrelated articles.
+        $candidate_ids = array_values(array_unique(array_map('absint', $ids)));
 
         $ranked = [];
         foreach ($candidate_ids as $source_id) {
