@@ -30,4 +30,17 @@ sidebar = re.search(r'<aside class="sia-single-sidebar".*?</aside>', page, flags
 if sidebar:
     for title in ("Solar Mission Satellite Update", "Solar Mission Rocket Progress", "Solar Mission Research Report"):
         assert title not in sidebar.group(0), "Related card duplicated in sidebar"
+# Adversarial: same generic category and 'USA' tag do not establish topical similarity.
+with urlopen(BASE := "http://127.0.0.1:18087/newport-fishermen-rescue/", timeout=20) as response:
+    unrelated_page = response.read().decode("utf-8", errors="replace")
+unrelated_section = re.search(r'<section class="sia-related">(.*?)</section>', unrelated_page, flags=re.S)
+if unrelated_section:
+    assert "Social Security Benefits Forecast 2032" not in unrelated_section.group(1), "False match: generic USA tag"
+    assert "James Talarico Campaign on Saturday Night Live" not in unrelated_section.group(1), "False match: same broad category"
+with urlopen("http://127.0.0.1:18087/travel-jaisalmer-road/", timeout=20) as response:
+    travel_page = response.read().decode("utf-8", errors="replace")
+travel_related = re.search(r'<section class="sia-related">(.*?)</section>', travel_page, flags=re.S)
+if travel_related:
+    assert "Army Officer Injured in Jaisalmer Road Accident" not in travel_related.group(1), "False match: travel guide vs. road accident"
+
 print("PASS: exactly three topical Related Stories cards with thumbnail and heading only")

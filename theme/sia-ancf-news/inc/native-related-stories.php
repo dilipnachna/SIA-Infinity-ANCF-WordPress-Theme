@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SIA_Native_Related_Stories {
-    private const POLICY_VERSION = 'related-four-signals-v1';
+    private const POLICY_VERSION = 'related-four-signals-v3-context-gate';
     private const MAX_CANDIDATES = 420;
     private const CACHE_TTL = HOUR_IN_SECONDS;
 
@@ -69,8 +69,8 @@ final class SIA_Native_Related_Stories {
 
             $shared_title = count(array_intersect_key($target_profile['title'], $source_profile['title']));
             $shared_tags = count(array_intersect($target_profile['tags'], $source_profile['tags']));
-            // Taxonomy alone is NOT sufficient to call two stories related.
-            if ($shared_title === 0 && $shared_tags === 0) {
+            // Broad location/category labels alone do not establish relevance.
+            if ($shared_title === 0) {
                 continue;
             }
 
@@ -78,11 +78,25 @@ final class SIA_Native_Related_Stories {
             $intent = self::cosine($target_profile['title'], $source_profile['title']);
             $title_context = $shared_title / max(1, min(count($target_profile['title']), count($source_profile['title'])));
             $tag_context = $shared_tags > 0 ? $shared_tags / max(1, min(count($target_profile['tags']), count($source_profile['tags']))) : 0.0;
-            $category_context = count(array_intersect($target_profile['categories'], $source_profile['categories'])) > 0 ? 1.0 : 0.0;
+            $shared_categories = count(array_intersect($target_profile['categories'], $source_profile['categories']));
+            $category_context = $shared_categories > 0 ? 1.0 : 0.0;
             $context = min(1.0, 0.70 * $title_context + 0.22 * $tag_context + 0.08 * $category_context);
 
-            // Reject generic-word or merely recent matches even when they are in the same category.
-            if ($semantic < 0.09 || $context < 0.18 || ($intent < 0.10 && $shared_tags === 0)) {
+            // Three editorially meaningful routes to a related story:
+            // 1. Same category and at least two non-generic headline keywords.
+            // 2. Same topical cluster (two matching tags), shared headline concept,
+            //    and strong document similarity.
+            // 3. Across categories, require exceptionally strong content overlap
+            //    so a travel article does not recommend a road-accident report.
+            $same_category_headline = $shared_categories > 0
+                && $shared_title >= 2 && $intent >= 0.18 && $semantic >= 0.14;
+            $same_topic_cluster = $shared_categories > 0
+                && $shared_tags >= 2 && $shared_title >= 1
+                && $intent >= 0.12 && $semantic >= 0.25;
+            $cross_category_topic = $shared_categories === 0
+                && $shared_title >= 2 && $intent >= 0.22 && $semantic >= 0.42;
+            if ((!$same_category_headline && !$same_topic_cluster && !$cross_category_topic)
+                || $context < 0.15) {
                 continue;
             }
 
@@ -179,10 +193,20 @@ final class SIA_Native_Related_Stories {
         $text = function_exists('mb_strtolower') ? mb_strtolower($text, 'UTF-8') : strtolower($text);
         $tokens = preg_split('/[^\p{L}\p{M}\p{N}]+/u', $text, -1, PREG_SPLIT_NO_EMPTY);
         $stop = array_fill_keys([
-            'the', 'and', 'for', 'with', 'from', 'this', 'that', 'new', 'news', 'latest',
-            'update', 'today', 'says', 'after', 'about', 'into', 'will', 'are', 'was',
+            'in', 'on', 'at', 'as', 'by', 'of', 'to', 'is', 'it', 'be', 'do', 'if',
+            'we', 'us', 'my', 'or', 'so', 'no', 'up', 'an', 'the', 'and', 'for', 'with',
+            'from', 'this', 'that', 'new', 'news', 'latest',
+            'update', 'today', 'says', 'said', 'after', 'about', 'into', 'will', 'are', 'was',
+            'were', 'been', 'had', 'has', 'have', 'who', 'what', 'when', 'where', 'how', 'why',
+            'his', 'her', 'him', 'she', 'himself', 'herself', 'you', 'our', 'their', 'they',
+            'off', 'out', 'over', 'under', 'more', 'less', 'year', 'years', 'week', 'month',
+            'first', 'last', 'next', 'now', 'can', 'could', 'would', 'should', 'may', 'might',
+            'man', 'woman', 'people', 'person', 'report', 'reports', 'reported', 'breaking',
+            'city', 'district', 'state', 'government', 'official', 'officials', 'story',
             'का', 'की', 'के', 'को', 'से', 'ने', 'में', 'पर', 'एक', 'है', 'थे', 'था',
             'और', 'यह', 'इस', 'लिए', 'तक', 'भी', 'अब', 'हुआ', 'हुई', 'खबर', 'समाचार',
+            'नई', 'नया', 'नए', 'आज', 'कल', 'बड़ी', 'बड़ा', 'कहा', 'किस', 'क्या', 'कैसे',
+            'लोग', 'जिला', 'जिले', 'सरकार', 'अधिकारी', 'रिपोर्ट', 'बताया', 'जानकारी',
         ], true);
         $vector = [];
         foreach (is_array($tokens) ? $tokens : [] as $word) {
