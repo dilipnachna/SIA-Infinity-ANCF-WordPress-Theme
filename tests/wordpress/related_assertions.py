@@ -43,4 +43,17 @@ travel_related = re.search(r'<section class="sia-related">(.*?)</section>', trav
 if travel_related:
     assert "Army Officer Injured in Jaisalmer Road Accident" not in travel_related.group(1), "False match: travel guide vs. road accident"
 
+# Adversarial: generic biography templates cannot join unrelated people.
+with urlopen("http://127.0.0.1:18087/michael-sanft-bio/", timeout=20) as response:
+    michael_page = response.read().decode("utf-8", errors="replace")
+michael_related = re.search(r'<section class="sia-related">(.*?)</section>', michael_page, flags=re.S)
+if michael_related:
+    assert "Jensen Huang Biography" not in michael_related.group(1), "False match: generic biography title"
+with urlopen("http://127.0.0.1:18087/jensen-huang-bio/", timeout=20) as response:
+    jensen_page = response.read().decode("utf-8", errors="replace")
+jensen_related = re.search(r'<section class="sia-related">(.*?)</section>', jensen_page, flags=re.S)
+assert jensen_related, "Related person/entity profiles missing"
+assert "Michael Sanft Attorney" not in jensen_related.group(1), "Unrelated biography recommended"
+assert "Lori Mills Huang" in jensen_related.group(1), "Related Huang biography missing"
+
 print("PASS: exactly three topical Related Stories cards with thumbnail and heading only")
