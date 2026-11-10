@@ -9,7 +9,7 @@ A lightweight newsroom theme designed for **any WordPress news or magazine websi
 - Responsive homepage, article pages, archives, menus and author pages
 - Works with ordinary WordPress posts and categories; dedicated news / article categories are **optional**
 - Native SEO metadata, JSON-LD and XML/News sitemaps when no SEO plugin provides them
-- Optional native AdSense loader, analytics and semantic related-content modules
+- Optional native AdSense loader, analytics, and local four-signal Related Stories (semantic similarity, context, headline intent, freshness)
 - No required caching or SEO plugin
 
 ## Install
@@ -22,7 +22,7 @@ If there are no news/article categories, the homepage uses normal posts automati
 
 ## Source and status
 
-- Theme: **v0.5.0-rc.11** (release candidate — verify on staging before production)
+- Theme: **v0.5.0-rc.12** (release candidate — verify on staging before production)
 - WordPress / PHP: **PHP 8.1+**
 - Theme source: [theme/sia-ancf-news/](theme/sia-ancf-news/)
 - Older standalone components: [plugins/](plugins/) (historical; not required to activate this theme)
