@@ -154,7 +154,8 @@ final class SIA_Native_Related_Stories {
         if ($excerpt === '') {
             $excerpt = wp_trim_words(wp_strip_all_tags(strip_shortcodes((string) $post->post_content)), 50, '');
         }
-        $body = mb_substr(wp_strip_all_tags(strip_shortcodes((string) $post->post_content)), 0, 2500, 'UTF-8');
+        $plain_content = wp_strip_all_tags(strip_shortcodes((string) $post->post_content));
+        $body = function_exists('mb_substr') ? mb_substr($plain_content, 0, 2500, 'UTF-8') : substr($plain_content, 0, 2500);
         $title_vector = self::vector($title, 1.0);
         $document = self::vector($title, 4.0);
         foreach ([self::vector($excerpt, 2.0), self::vector($body, 1.0)] as $part) {
