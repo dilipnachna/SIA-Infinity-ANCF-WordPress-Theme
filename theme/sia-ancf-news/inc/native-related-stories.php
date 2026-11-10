@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SIA_Native_Related_Stories {
-    private const POLICY_VERSION = 'related-four-signals-v1';
+    private const POLICY_VERSION = 'related-four-signals-v2-topic-precision';
     private const MAX_CANDIDATES = 420;
     private const CACHE_TTL = HOUR_IN_SECONDS;
 
@@ -69,8 +69,10 @@ final class SIA_Native_Related_Stories {
 
             $shared_title = count(array_intersect_key($target_profile['title'], $source_profile['title']));
             $shared_tags = count(array_intersect($target_profile['tags'], $source_profile['tags']));
-            // Taxonomy alone is NOT sufficient to call two stories related.
-            if ($shared_title === 0 && $shared_tags === 0) {
+            // A broad category, country tag or generic article body cannot prove
+            // two news stories cover the same event. Require at least TWO
+            // meaningful headline terms to overlap before considering scores.
+            if ($shared_title < 2) {
                 continue;
             }
 
@@ -82,7 +84,7 @@ final class SIA_Native_Related_Stories {
             $context = min(1.0, 0.70 * $title_context + 0.22 * $tag_context + 0.08 * $category_context);
 
             // Reject generic-word or merely recent matches even when they are in the same category.
-            if ($semantic < 0.09 || $context < 0.18 || ($intent < 0.10 && $shared_tags === 0)) {
+            if ($semantic < 0.09 || $context < 0.18 || $intent < 0.18) {
                 continue;
             }
 
@@ -180,9 +182,17 @@ final class SIA_Native_Related_Stories {
         $tokens = preg_split('/[^\p{L}\p{M}\p{N}]+/u', $text, -1, PREG_SPLIT_NO_EMPTY);
         $stop = array_fill_keys([
             'the', 'and', 'for', 'with', 'from', 'this', 'that', 'new', 'news', 'latest',
-            'update', 'today', 'says', 'after', 'about', 'into', 'will', 'are', 'was',
+            'update', 'today', 'says', 'said', 'after', 'about', 'into', 'will', 'are', 'was',
+            'were', 'been', 'had', 'has', 'have', 'who', 'what', 'when', 'where', 'how', 'why',
+            'his', 'her', 'him', 'she', 'himself', 'herself', 'you', 'our', 'their', 'they',
+            'off', 'out', 'over', 'under', 'more', 'less', 'year', 'years', 'week', 'month',
+            'first', 'last', 'next', 'now', 'can', 'could', 'would', 'should', 'may', 'might',
+            'man', 'woman', 'people', 'person', 'report', 'reports', 'reported', 'breaking',
+            'city', 'district', 'state', 'government', 'official', 'officials', 'story',
             'का', 'की', 'के', 'को', 'से', 'ने', 'में', 'पर', 'एक', 'है', 'थे', 'था',
             'और', 'यह', 'इस', 'लिए', 'तक', 'भी', 'अब', 'हुआ', 'हुई', 'खबर', 'समाचार',
+            'नई', 'नया', 'नए', 'आज', 'कल', 'बड़ी', 'बड़ा', 'कहा', 'किस', 'क्या', 'कैसे',
+            'लोग', 'जिला', 'जिले', 'सरकार', 'अधिकारी', 'रिपोर्ट', 'बताया', 'जानकारी',
         ], true);
         $vector = [];
         foreach (is_array($tokens) ? $tokens : [] as $word) {
