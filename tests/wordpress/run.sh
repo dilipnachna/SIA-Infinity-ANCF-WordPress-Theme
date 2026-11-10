@@ -35,6 +35,7 @@ docker exec sia-ancf-ci-wp php /qa-scripts/install.php
 docker exec sia-ancf-ci-wp php /qa-scripts/fixture.php > "$qa_dir/fixture.json"
 python3 -m json.tool "$qa_dir/fixture.json" >/dev/null
 python3 "$qa_dir/http_assertions.py" generic
+python3 "$qa_dir/related_assertions.py"
 docker exec sia-ancf-ci-wp php /qa-scripts/config.php categories
 python3 "$qa_dir/http_assertions.py" categories
 docker exec sia-ancf-ci-wp php /qa-scripts/config.php custom-slugs
