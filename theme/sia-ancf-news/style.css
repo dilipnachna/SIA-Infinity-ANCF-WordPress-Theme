@@ -3,7 +3,7 @@ Theme Name: SIA ANCF News
 Theme URI: https://sia-infinity.com/
 Author: SIA Infinity
 Description: Newsroom-first WordPress theme with optional native search metadata and Publisher Intelligence integration UI.
-Version: 0.5.0-rc.14
+Version: 0.5.0-rc.15
 Requires PHP: 8.1
 Text Domain: sia-ancf-news
 */
@@ -297,7 +297,7 @@ button { cursor: pointer; }
 .sia-lead-story { min-width: 0; }
 .sia-lead-story__media { border-radius: 14px; overflow: hidden; background: var(--sia-soft); }
 .sia-lead-story__media img,
-.sia-lead-story__media .sia-media-placeholder { aspect-ratio: 16 / 9; width: 100%; object-fit: cover; }
+.sia-lead-story__media .sia-media-placeholder { aspect-ratio: 16 / 9; width: 100%; object-fit: contain; }
 .sia-lead-story__body { padding-top: 17px; }
 .sia-lead-story h1 {
   max-width: 920px;
@@ -376,7 +376,7 @@ button { cursor: pointer; }
 .sia-home-feature__media .sia-media-placeholder {
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
 }
 .sia-home-feature__body { padding: 20px 22px 22px; }
 .sia-home-feature h2 {
@@ -445,9 +445,10 @@ button { cursor: pointer; }
 }
 .sia-story-card--standard .sia-media { border-radius: 9px; }
 .sia-story-card--standard .sia-media img,
-.sia-story-card--standard .sia-media-placeholder { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
-.sia-media img { transition: transform .3s ease; }
-.sia-media:hover img { transform: scale(1.025); }
+.sia-story-card--standard .sia-media-placeholder { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; }
+/* Do not zoom thumbnails: graphics often contain edge-to-edge lettering. */
+.sia-media img { transition: filter .2s ease; }
+.sia-media:hover img { filter: brightness(.98); }
 .sia-media-placeholder {
   display: grid;
   place-items: center;
@@ -479,7 +480,7 @@ button { cursor: pointer; }
 }
 .sia-story-card--compact .sia-media { border-radius: 7px; }
 .sia-story-card--compact .sia-media img,
-.sia-story-card--compact .sia-media-placeholder { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; min-height: 0; }
+.sia-story-card--compact .sia-media-placeholder { width: 100%; aspect-ratio: 16 / 10; object-fit: contain; min-height: 0; }
 .sia-story-card--compact .sia-story-card__body { padding-top: 0; }
 .sia-story-card--compact .sia-story-card__title { margin-top: 2px; font-size: .98rem; }
 .sia-story-card--compact .sia-eyebrow { font-size: .66rem; }

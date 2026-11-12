@@ -15,9 +15,9 @@ checks = {
     "homepage content surfaces deduplicate": "$used_ids" in FRONT and "$hero_used" in FRONT and "array_unique" in FRONT and "post__not_in" in FRONT,
     "latest view-all links to indexable stream categories": "get_term_link($article_root)" in FRONT and "get_term_link($news_root)" in FRONT,
     "single related surfaces are split": "related_pool" in SINGLE and "sidebar_ids" in SINGLE,
-    "single hero uses newsroom image size": "the_post_thumbnail('sia-news-hero'" in SINGLE,
+    "single hero uses uncropped image size": "the_post_thumbnail('large'" in SINGLE,
     "single supports paginated content": "wp_link_pages();" in SINGLE,
-    "page hero uses newsroom image size": "the_post_thumbnail('sia-news-hero'" in PAGE,
+    "page hero uses uncropped image size": "the_post_thumbnail('large'" in PAGE,
     "page supports paginated content": "wp_link_pages();" in PAGE,
 }
 

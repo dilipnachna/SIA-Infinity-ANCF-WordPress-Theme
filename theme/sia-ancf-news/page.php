@@ -6,7 +6,7 @@
       <h1><?php echo esc_html(get_the_title()); ?></h1>
     </header>
     <?php if (has_post_thumbnail()) : ?>
-      <figure class="sia-hero"><?php the_post_thumbnail('sia-news-hero', ['loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async']); ?></figure>
+      <figure class="sia-hero"><?php the_post_thumbnail('large', ['loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async']); ?></figure>
     <?php endif; ?>
     <div class="entry-content">
       <?php the_content(); ?>

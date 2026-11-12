@@ -44,9 +44,9 @@ function sia_ancf_news_setup(): void {
     add_theme_support('custom-logo', ['height' => 160, 'width' => 640, 'flex-height' => true, 'flex-width' => true]);
     add_editor_style('style.css');
 
-    add_image_size('sia-news-hero', 1200, 675, true);
-    add_image_size('sia-news-card', 720, 405, true);
-    add_image_size('sia-news-thumb', 360, 203, true);
+    add_image_size('sia-news-hero', 1200, 675, false);
+    add_image_size('sia-news-card', 720, 405, false);
+    add_image_size('sia-news-thumb', 360, 203, false);
 
     register_nav_menus([
         'primary' => __('Primary Menu', 'sia-ancf-news'),
@@ -259,7 +259,15 @@ function sia_ancf_news_thumbnail(int $post_id, string $size = 'sia-news-card', s
 
     echo '<a class="sia-media ' . esc_attr($class) . '" href="' . esc_url($permalink) . '" aria-label="' . esc_attr($accessible_name) . '">';
     if ($has_image) {
-        echo get_the_post_thumbnail($post_id, $size, [
+        // Legacy custom sizes were hard-cropped in existing WordPress metadata.
+        // Use the built-in proportional sizes so old graphic/text thumbnails
+        // also render uncut without regenerating or replacing media assets.
+        $display_size = match ($size) {
+            'sia-news-hero', 'sia-news-card' => 'large',
+            'sia-news-thumb' => 'medium_large',
+            default => $size,
+        };
+        echo get_the_post_thumbnail($post_id, $display_size, [
             'loading' => $size === 'sia-news-hero' ? 'eager' : 'lazy',
             'fetchpriority' => $size === 'sia-news-hero' ? 'high' : 'auto',
             'decoding' => 'async',
