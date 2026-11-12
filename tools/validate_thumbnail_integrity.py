@@ -25,5 +25,5 @@ for selector in (
     declaration = css.split(selector, 1)[1].split("}", 1)[0]
     assert "object-fit: contain" in declaration, selector
 assert ".sia-media:hover img { transform:" not in css
-assert "Version: 0.5.0-rc.15" in css
+assert "Version: " + (ROOT / "THEME_VERSION").read_text(encoding="utf-8").strip() in css
 print("PASS: image edges/text preserved on hero, homepage, cards, related stories and single pages")

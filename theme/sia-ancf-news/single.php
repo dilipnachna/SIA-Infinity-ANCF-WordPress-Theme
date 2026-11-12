@@ -68,6 +68,20 @@
       </div>
       <?php do_action('sia_ancf_after_article_content'); ?>
 
+      <?php
+      $topics = get_the_tags($post_id);
+      if (!empty($topics) && !is_wp_error($topics)) :
+      ?>
+        <nav class="sia-post-topics" aria-label="<?php esc_attr_e('Post topics', 'sia-ancf-news'); ?>">
+          <span class="sia-post-topics__label"><?php esc_html_e('Topics', 'sia-ancf-news'); ?> :</span>
+          <ul class="sia-post-topics__list">
+            <?php foreach ($topics as $topic) : ?>
+              <li><a href="<?php echo esc_url(get_tag_link($topic->term_id)); ?>"><?php echo esc_html($topic->name); ?></a></li>
+            <?php endforeach; ?>
+          </ul>
+        </nav>
+      <?php endif; ?>
+
       <?php if (comments_open() || get_comments_number()) : ?>
         <?php comments_template(); ?>
       <?php endif; ?>

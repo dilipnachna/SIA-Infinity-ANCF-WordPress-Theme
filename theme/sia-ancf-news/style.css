@@ -3,7 +3,7 @@ Theme Name: SIA ANCF News
 Theme URI: https://sia-infinity.com/
 Author: SIA Infinity
 Description: Newsroom-first WordPress theme with optional native search metadata and Publisher Intelligence integration UI.
-Version: 0.5.0-rc.15
+Version: 0.5.0-rc.16
 Requires PHP: 8.1
 Text Domain: sia-ancf-news
 */
@@ -581,6 +581,49 @@ button { cursor: pointer; }
   vertical-align: top;
 }
 .entry-content th { background: var(--sia-soft); font-weight: 750; }
+/* Post topics — show real WordPress tags after the article, never fabricate topics. */
+.sia-post-topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--sia-line);
+  font-family: Inter, ui-sans-serif, sans-serif;
+}
+.sia-post-topics__label {
+  color: var(--sia-ink);
+  font-size: .86rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.sia-post-topics__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sia-post-topics__list a {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid var(--sia-line);
+  border-radius: 7px;
+  background: var(--sia-soft);
+  color: var(--sia-ink);
+  font-size: .82rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+.sia-post-topics__list a:hover {
+  border-color: var(--sia-gold);
+  background: var(--sia-gold-soft);
+}
 .author-box {
   margin-top: 38px;
   padding: 22px;
