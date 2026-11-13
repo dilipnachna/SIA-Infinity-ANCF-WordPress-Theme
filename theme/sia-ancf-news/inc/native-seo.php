@@ -333,6 +333,13 @@ add_action('wp_head', static function (): void {
         $term_url = get_term_link($object);
         $url = is_wp_error($term_url) ? '' : $term_url;
         $description = term_description($object);
+        if ($object instanceof WP_Term) {
+            $custom_term_description = (string) get_term_meta($object->term_id, '_sia_term_seo_description', true);
+            if ($custom_term_description !== '') {
+                $description = $custom_term_description;
+                $is_custom_description = true;
+            }
+        }
     } elseif (is_author() && $object instanceof WP_User) {
         $url = get_author_posts_url($object->ID);
         $description = get_the_author_meta('description', $object->ID);

@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__ . '/inc/class-sia-publisher-intelligence.php';
 require_once __DIR__ . '/inc/native-seo.php';
+require_once __DIR__ . '/inc/native-seo-enhancements.php';
 require_once __DIR__ . '/inc/native-theme-settings.php';
 require_once __DIR__ . '/inc/native-category-sections.php';
 require_once __DIR__ . '/inc/native-redirects.php';

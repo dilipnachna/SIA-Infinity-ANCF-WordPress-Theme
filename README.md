@@ -23,6 +23,15 @@ A lightweight newsroom theme designed for **any WordPress news or magazine websi
 
 If there are no news/article categories, the homepage uses normal posts automatically. For news-only publishers, choose **Treat all posts as news** to enable NewsArticle and a current-news sitemap across categories.
 
+## Native SEO improvements
+
+The theme adds the actual custom logo to Organization JSON-LD when configured,
+and adds BreadcrumbList markup based on the real WordPress category and page
+hierarchy. Category and tag edit screens include optional SEO title and meta
+description fields; values remain unset unless an editor deliberately saves
+them. These are integrated into the native metadata graph with no second JSON-LD
+script and no SEO plugin dependency.
+
 ## Discovery documents
 
 The theme generates /robots.txt with WordPress' native robots_txt filter,
@@ -43,7 +52,7 @@ AI-discovery directory, not a guarantee of indexing, citation or AI training.
 
 ## Source and status
 
-- Theme: **v0.5.0-rc.18** (release candidate — verify on staging before production)
+- Theme: **v0.5.0-rc.19** (release candidate — verify on staging before production)
 - WordPress / PHP: **PHP 8.1+**
 - Theme source: [theme/sia-ancf-news/](theme/sia-ancf-news/)
 - Older standalone components: [plugins/](plugins/) (historical; not required to activate this theme)
