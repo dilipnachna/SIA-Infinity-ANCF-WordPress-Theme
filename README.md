@@ -13,7 +13,7 @@ A lightweight newsroom theme designed for **any WordPress news or magazine websi
 - No required caching or SEO plugin
 - Uncropped responsive news images: preserve text and graphics inside thumbnails across homepage, cards and article pages
 - End-of-article **Topics :** links to existing WordPress tags (hidden on untagged posts)
-- Theme-owned virtual robots.txt and llms.txt; one consistent crawler policy, site-relative sitemap and live public article directory
+- Theme-owned virtual robots.txt and llms.txt; one consistent crawler policy, site-relative sitemap and complete category-tree article directory
 
 ## Install
 
@@ -26,7 +26,10 @@ If there are no news/article categories, the homepage uses normal posts automati
 ## Discovery documents
 
 The theme generates /robots.txt with WordPress' native robots_txt filter,
-and serves /llms.txt dynamically from the site's public posts and published pages.
+and serves /llms.txt dynamically from all indexable published posts in every
+root category and child category, plus the site's published editorial pages.
+The optional /llms-full.txt contains their complete public article text in
+Markdown form, assembled in bounded batches without manually editing files.
 No cron, disk writes or manual edits are needed when articles are published.
 robots.txt respects Settings > Reading > Discourage search engines.
 A dedicated SEO plugin's robots rules take priority when one is active.
@@ -40,7 +43,7 @@ AI-discovery directory, not a guarantee of indexing, citation or AI training.
 
 ## Source and status
 
-- Theme: **v0.5.0-rc.17** (release candidate — verify on staging before production)
+- Theme: **v0.5.0-rc.18** (release candidate — verify on staging before production)
 - WordPress / PHP: **PHP 8.1+**
 - Theme source: [theme/sia-ancf-news/](theme/sia-ancf-news/)
 - Older standalone components: [plugins/](plugins/) (historical; not required to activate this theme)
