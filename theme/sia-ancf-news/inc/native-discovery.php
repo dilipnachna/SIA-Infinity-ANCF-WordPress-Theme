@@ -10,10 +10,26 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-/** Use the theme's native sitemap; let installed SEO providers own their route. */
+/** Dedicated SEO providers may own robots.txt; don't override their policy. */
+function sia_ancf_discovery_external_seo_present(): bool {
+    return defined('RANK_MATH_VERSION') || defined('WPSEO_VERSION')
+        || defined('AIOSEO_VERSION') || defined('SEOPRESS_VERSION')
+        || defined('THE_SEO_FRAMEWORK_VERSION');
+}
+
+/** The theme's canonical sitemap is /sitemap_index.xml on this site. */
 function sia_ancf_discovery_sitemap_url(): string {
-    $path = sia_ancf_native_seo_enabled() ? '/sitemap_index.xml' : '/wp-sitemap.xml';
-    return (string) apply_filters('sia_ancf_discovery_sitemap_url', home_url($path));
+    return (string) apply_filters('sia_ancf_discovery_sitemap_url', home_url('/sitemap_index.xml'));
+}
+
+function sia_ancf_discovery_robots_content(bool $public): string {
+    if (!$public) {
+        return "User-agent: *\nDisallow: /\n";
+    }
+    return "User-agent: *\n"
+        . "Disallow: /wp-admin/\n"
+        . "Allow: /wp-admin/admin-ajax.php\n\n"
+        . "Sitemap: " . esc_url_raw(sia_ancf_discovery_sitemap_url()) . "\n";
 }
 
 /**
@@ -22,18 +38,28 @@ function sia_ancf_discovery_sitemap_url(): string {
  * crawling for a site the owner marked private.
  */
 add_filter('robots_txt', static function (string $output, bool $public): string {
-    if (!sia_ancf_native_seo_enabled()) {
-        // If a dedicated SEO plugin is active, don't overwrite its policy.
-        return $output;
-    }
-    if (!$public) {
-        return "User-agent: *\nDisallow: /\n";
-    }
-    return "User-agent: *\n"
-        . "Disallow: /wp-admin/\n"
-        . "Allow: /wp-admin/admin-ajax.php\n\n"
-        . "Sitemap: " . esc_url_raw(sia_ancf_discovery_sitemap_url()) . "\n";
+    return sia_ancf_discovery_external_seo_present()
+        ? $output : sia_ancf_discovery_robots_content($public);
 }, 1000, 2);
+
+/**
+ * WordPress core's do_robots action can run after other sitemap/robots hooks.
+ * Serve one canonical document before the default callback appends a second
+ * sitemap. Keep the filter above for hosts that serve robots via that filter.
+ */
+add_action('do_robots', static function (): void {
+    if (sia_ancf_discovery_external_seo_present()) {
+        return;
+    }
+    status_header(200);
+    header('Content-Type: text/plain; charset=UTF-8');
+    header('X-Content-Type-Options: nosniff');
+    nocache_headers();
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') {
+        echo sia_ancf_discovery_robots_content((bool) get_option('blog_public'));
+    }
+    exit;
+}, 0);
 
 /** Sanitize visible titles for Markdown link labels. */
 function sia_ancf_discovery_markdown_label(string $text): string {

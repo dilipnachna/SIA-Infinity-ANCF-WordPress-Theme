@@ -13,8 +13,10 @@ assert 'User-agent: *' in code
 assert 'Disallow: /wp-admin/' in code
 assert 'Allow: /wp-admin/admin-ajax.php' in code
 assert "if (!$public)" in code and 'Disallow: /' in code
+assert "add_action('do_robots'" in code and "sia_ancf_discovery_robots_content" in code
+assert "sia_ancf_discovery_external_seo_present()" in code
 assert 'Sitemap: ' in code and 'sia_ancf_discovery_sitemap_url()' in code
-assert "sia_ancf_native_seo_enabled()" in code
+assert "sia_ancf_discovery_external_seo_present()" in code
 assert "add_action('parse_request'" in code
 assert "substr($request_path, strlen($base_path)) !== 'llms.txt'" in code
 assert "get_option('blog_public')" in code
