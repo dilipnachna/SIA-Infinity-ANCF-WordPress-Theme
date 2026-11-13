@@ -12,6 +12,7 @@ require_once __DIR__ . '/inc/native-redirects.php';
 require_once __DIR__ . '/inc/native-ads.php';
 require_once __DIR__ . '/inc/native-toc.php';
 require_once __DIR__ . '/inc/native-sitemaps.php';
+require_once __DIR__ . '/inc/native-discovery.php';
 require_once __DIR__ . '/inc/native-url-memory.php';
 require_once __DIR__ . '/inc/native-avatars.php';
 require_once __DIR__ . '/inc/native-copy-draft.php';
